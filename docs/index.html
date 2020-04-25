@@ -7,6 +7,29 @@
       <body>
         <div id='content'>
     <h1 id="snapscale-an-object-detection-experiment">SnapScale: an Object Detection experiment</h1>
+<ul>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#the-goal-of-this-report">The goal of this report</a></li>
+<li><a href="#targeted-audience">Targeted audience</a></li></ul></li>
+<li><a href="#case-study-a-weigh-in-habit-app-snapscale">Case study: a weigh-in habit app, SnapScale</a><ul>
+<li><a href="#why">Why</a></li>
+<li><a href="#how">How</a></li></ul></li>
+<li><a href="#implementation-details-worth-sharing">Implementation details worth sharing</a><ul>
+<li><a href="#ai-last">AI Last</a></li>
+<li><a href="#the-app">The app</a></li>
+<li><a href="#backend">Backend</a></li>
+<li><a href="#labeling-ui">Labeling UI</a></li>
+<li><a href="#digit-recognition">Digit recognition</a><ul>
+<li><a href="#related-work">Related work</a></li>
+<li><a href="#iterations-custom-object-detection-solution">Iterations custom object detection solution</a></li>
+<li><a href="#displayorientation-detection">Display orientation detection</a></li>
+<li><a href="#digit-detection">Digit detection</a></li>
+<li><a href="#serving">Serving</a></li></ul></li></ul></li>
+<li><a href="#conclusion">Conclusion</a><ul>
+<li><a href="#ml-principles-that-i-break-and-i-wish-i-hadnt">ML principles that I break, and I wish I hadn't</a></li>
+<li><a href="#ml-principles-that-i-challenge">ML principles that I challenge</a></li>
+<li><a href="#parting-words">Parting words</a></li></ul></li>
+</ul>
 <h2 id="introduction">Introduction</h2>
 <p>I started drilling on SnapScale in mid-2018 with a goal of <strong>creating a weigh-in habit</strong> for a friend of mine. The idea is to convert an old school scale into a smart <strong>using phone's camera</strong> and OCR. The users don't need to look at the number in that moment, the phone does the job and writes the number to the log, optionally user's FitBit profile.</p>
 <p>If you're looking for a demo - it's here - <a href="https://snapscale.life">SnapScale - weigh in daily</a>.</p>
@@ -26,10 +49,10 @@
 <h3 id="why">Why</h3>
 <p>The goal of SnapScale is to instill a periodic weigh-in habbit in humans.</p>
 <p>A periodic - for example, daily - body weight measurement is already a good diet on its own.</p>
-<p>We didn't define a goal to help people lose weight, instead our goal is to help people be aware of their body. The awareness goal is a smaller, prerequisite goal for the greater goal - human health.</p>
+<p>I didn't define a goal to help people lose weight, instead our goal is to help people be more aware. The awareness goal is a smaller, prerequisite goal for the greater goal - human health.</p>
 <p>Taking a weight measurement has amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.</p>
 <h3 id="how">How</h3>
-<p>Smart scales like FitBit Aria are a great way achieve this. With <a href="https://snapscale.life">SnapScale</a> we are giving the same product to people that currently don't own a smart scale. I am not saying that the app doesn't work with smart scales, it works with any scale that shows the measurement to the user!</p>
+<p>Smart scales like FitBit Aria are a great way achieve this. With <a href="https://snapscale.life">SnapScale</a> I am giving the same product to people that currently don't own a smart scale. I am not saying that the app doesn't work with smart scales, it works with any scale that shows the measurement to the user!</p>
 <p>The weigh-in habit can be measured with two metrics:</p>
 <ul>
 <li>Per-user percentage of days with a measurement (we want to maximize)</li>
@@ -41,7 +64,7 @@
 <li>view your previous measurements</li>
 <li>settings screen that optionally sets up FitBit export and no-weigh-in reminders</li>
 </ul>
-<p>We intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.</p>
+<p>I intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.</p>
 <h2 id="implementation-details-worth-sharing">Implementation details worth sharing</h2>
 <h3 id="ai-last">AI Last</h3>
 <p>Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. But, before diving into that part - I defined and implemented everything else first:</p>
@@ -65,7 +88,7 @@
 <p>The application is built using <a href="https://expo.io">Expo</a> framework which is a wrapper around <a href="https://reactnative.dev/">React Native</a>.  It's suitable for fast prototyping which is exactly what I needed. Same codebase is executed on both platforms. If Expo would have a book it would be called "App development for dummies".</p>
 <p>There is really nothing interesting in the client code implementation here.</p>
 <h3 id="backend">Backend</h3>
-<p>The app needs a backend because the logs and images are still stored on the backend. There is no authentication of any kind, but there is a lightweight register step.</p>
+<p>The app needs a backend because the logs and images are stored serverside. There is no authentication of any kind, but there is a lightweight register step.</p>
 <p>On app install, user needs to agree on terms of use and sign using a captcha. The successful captcha challenge gives to the application a session token that is later required to communicate with the server. This was a good way to design an application + backend storage without requiring a login.</p>
 <p>Although login sounds like a good alternative, I suspected it would repel some users due to sensitivity of the images that are being sent.</p>
 <p>For a backend, I deployed a <a href="https://nodejs.org">NodeJS</a> application on <a href="https://cloud.google.com/appengine">Google App Engine</a>.  To get a free-of-charge deployment for prototypes with low amount of requests, the trick is to use <code>standard</code> environment with <code>F1</code> instance clasee. The <code>app.yaml</code> config looks like this:</p>
@@ -73,14 +96,76 @@
 env: standard
 instance_class: F1
 </code></pre>
-<p>The database for metadata used is <a href="https://cloud.google.com/datastore">Google Cloud Datastore</a> and for image store we used <a href="https://cloud.google.com/storage">Google Cloud Storage</a>. Both systems are free-of-charge for prototypes with low amount of requests.</p>
+<p>The database for metadata used is <a href="https://cloud.google.com/datastore">Google Cloud Datastore</a> and for image store I used <a href="https://cloud.google.com/storage">Google Cloud Storage</a>. Both systems are free-of-charge for prototypes with low amount of requests.</p>
+<p>The natural opportunity here is to move the model execution to the client, which will remove the need for backend, and simplify privacy policy.</p>
 <h3 id="labeling-ui">Labeling UI</h3>
-<p>When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labeling UI. The Labeling UI would show the image, let me translate and rotate it, and label the digits.</p>
+<p>When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labeling UI. The Labeling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share y coordinates, and all have the same dimensions. This is possible because prior to labeling the digits, the image is rotated in such way that the display is upright.</p>
 <p>(image)</p>
-<p>I manually processed ~450 images so far.</p>
+<p>Note that I made an assumption that the digits are monospace. Well :) Assumption turns out to be the mother of all fuckups.</p>
+<p>(image)</p>
+<p>I manually processed ~450 images so far. The Labeling UI is implemented in HTML5, mainly using Canvas API in JavaScript. The image transformation is encoded using the affine transformation matrix, <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix">DOMMatrix</a>.</p>
+<p>The images without visible weight measurement are discarded. All other images are labeled and split into training/test/validation with 70/10/20 ratios.</p>
+<p>Having only good images in the dataset, to evaluate the algorithm I defined the accuracy metric as follows:</p>
+<ul>
+<li><strong>accuracy</strong>: percentage of images in which all digits are correctly identified</li>
+</ul>
+<p>If an image that shows <code>78.2</code> gets recognized as <code>78.3</code>, the accuracy is not satifsfied.</p>
 <h3 id="digit-recognition">Digit recognition</h3>
-<h4 id="display-orientation-detection">Display orientation detection</h4>
+<p>In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day and I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy. I didn't expect that I'll be trainig new models.</p>
+<h4 id="related-work">Related work</h4>
+<p>Classical computer vision techniques:</p>
+<ul>
+<li><a href="https://github.com/jacnel/wetr">https://github.com/jacnel/wetr</a></li>
+<li><a href="https://github.com/NatholBMX/ScaleDigitizer">https://github.com/NatholBMX/ScaleDigitizer</a></li>
+<li><a href="https://github.com/charleswest/Weight">https://github.com/charleswest/Weight</a></li>
+<li><a href="https://github.com/suyashkumar/seven-segment-ocr">https://github.com/suyashkumar/seven-segment-ocr</a></li>
+<li><a href="https://github.com/kazmiekr/GasPumpOCR.git">https://github.com/kazmiekr/GasPumpOCR.git</a></li>
+<li><a href="https://github.com/bikz05/digit-recognition">https://github.com/bikz05/digit-recognition</a></li>
+<li><a href="https://github.com/g-sari/pyautodigits">https://github.com/g-sari/pyautodigits</a></li>
+<li><a href="http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf">http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf</a></li>
+<li><a href="https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b">https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b)</a>)</li>
+<li><a href="https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37">https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37</a></li>
+<li><a href="https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea">https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea</a></li>
+<li><a href="https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/">https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/</a></li>
+<li><a href="https://www.programcreek.com/python/example/89294/cv2.watershed">https://www.programcreek.com/python/example/89294/cv2.watershed</a></li>
+<li><a href="https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/">https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/</a></li>
+<li><a href="https://www.sciencedirect.com/science/article/pii/S235248471930174X">https://www.sciencedirect.com/science/article/pii/S235248471930174X</a></li>
+</ul>
+<p>Street View House Number Dataset related solutions:</p>
+<ul>
+<li><a href="https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504">https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504</a></li>
+<li><a href="https://arxiv.org/pdf/1312.6082.pdf">https://arxiv.org/pdf/1312.6082.pdf</a></li>
+<li><a href="http://ufldl.stanford.edu/housenumbers/">http://ufldl.stanford.edu/housenumbers/</a></li>
+<li><a href="https://github.com/potterhsu/SVHNClassifier">https://github.com/potterhsu/SVHNClassifier</a></li>
+<li><a href="https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md">https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md</a></li>
+</ul>
+<p>Open Source tensorflow Object Detection pipeline:</p>
+<ul>
+<li><a href="https://github.com/tensorflow/models/tree/master/research/object_detection">https://github.com/tensorflow/models/tree/master/research/object_detection</a></li>
+</ul>
+<p>Documentation about Google Cloud object detection solutions as service:</p>
+<ul>
+<li><a href="https://cloud.google.com/vision/automl/object-detection/docs">https://cloud.google.com/vision/automl/object-detection/docs</a></li>
+<li><a href="https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start">https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start</a></li>
+</ul>
+<p>My time in investigating and trying out existing solutions was roughly spent like this:</p>
+<ul>
+<li><code>30%</code> Classical computer vision techniques (OpenCV and similar)</li>
+<li><code>30%</code> SVHN dataset</li>
+<li><code>40%</code> Tensorflow custom solutions and transfer learning</li>
+</ul>
+<p>I had to implement 5-6 different pipelines that will take my images and labels and convert it to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.</p>
+<p>At the end I was left with no options but to train something on my own… but I had only 400 images.</p>
+<h4 id="iterations-custom-object-detection-solution">Iterations custom object detection solution</h4>
+<p>Naive as I am, I started by training a model that solves everything at once. The input is the raw user image, and the output are labeled digit rectangles.</p>
+<p>This hit two problems:</p>
+<p>1) the 7-segment digits sometimes change meaning with rotation (think 2 and 5)<br />
+1) the digit was sometimes too small on the original image for the model to pick up</p>
+<p>The rotation problem is amplified by the fact that the mobile phone doesn't know how to orientat the image of something that is on the floor.</p>
+<p>I decided to split the problem to two phases: detecting the display first, and then detecting the digits in that display. Each phase can be evaluated on its own, which is useful in loss analysis.</p>
+<h4 id="displayorientation-detection">Display+orientation detection</h4>
 <h4 id="digit-detection">Digit detection</h4>
+<h4 id="serving">Serving</h4>
 <h2 id="conclusion">Conclusion</h2>
 <h3 id="ml-principles-that-i-break-and-i-wish-i-hadnt">ML principles that I break, and I wish I hadn't</h3>
 <h3 id="ml-principles-that-i-challenge">ML principles that I challenge</h3>
