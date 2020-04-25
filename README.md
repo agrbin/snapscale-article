@@ -76,7 +76,7 @@ One risk of this approach is betting everything on the fact that the last step (
 
 ### The app
 
-The application is built using [Expo](https://expo.io) framework which is a wrapper around [React Native](https://reactnative.dev/).  It's suitable for fast prototyping which is exactly what I needed. Same codebase is executed on both platforms. If Expo would have a book it would be called a "App development for dummies".
+The application is built using [Expo](https://expo.io) framework which is a wrapper around [React Native](https://reactnative.dev/).  It's suitable for fast prototyping which is exactly what I needed. Same codebase is executed on both platforms. If Expo would have a book it would be called "App development for dummies".
 
 There is really nothing interesting in the client code implementation here.
 
