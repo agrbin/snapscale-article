@@ -1,12 +1,3 @@
-audience: tech audience
-real goal: link into web, link snapscale.life with hyperlinks that explain what it is.
-
-# Scratch space
-
-Unless you are a student or learning a new skill, it's wrong to do ML just for the purposes of doing ML.
-Yes, it's a sexy word these days, but let's be real about it - in 5 years it will be a tool just like all other tools.
-
-
 # SnapScale: an Object Detection experiment
 
 ## Introduction 
