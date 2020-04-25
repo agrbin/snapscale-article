@@ -132,4 +132,4 @@ ML is nothing but a tool.
 
 I think that even The Doors knew this when they played The Roadhouse Blues. They say "Yeah, keep your eyes on the **road**, your hand upon the **wheel**.".  For **road**, they probably meant **user goal** and for the **whell** they meant **the tools** - whatever tools are needed - a for-loop, a compiler, a database or a model.
 
-If you didn't yet, listen to the song! It is full of good engineering lessons!
+If you didn't yet, listen to the song! It is full of good engineering analogies!
