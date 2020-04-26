@@ -24,7 +24,6 @@
 <li><a href="#backend">Backend</a></li>
 <li><a href="#labeling-ui">Labeling UI</a></li>
 <li><a href="#digit-recognition">Digit recognition</a><ul>
-<li><a href="#related-work">Related work</a></li>
 <li><a href="#iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</a></li>
 <li><a href="#display-detection">Display detection</a></li>
 <li><a href="#digit-detection">Digit detection</a></li></ul></li></ul></li>
@@ -115,43 +114,6 @@ instance_class: F1
 <p>If an image that shows <code>78.2</code> gets recognized as <code>78.3</code>, the accuracy is not satifsfied.</p>
 <h3 id="digit-recognition">Digit recognition</h3>
 <p>In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day and I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy. I didn't expect that I'll be trainig new models.</p>
-<h4 id="related-work">Related work</h4>
-<p>Classical computer vision techniques:</p>
-<ul>
-<li><a href="https://github.com/jacnel/wetr">https://github.com/jacnel/wetr</a></li>
-<li><a href="https://github.com/NatholBMX/ScaleDigitizer">https://github.com/NatholBMX/ScaleDigitizer</a></li>
-<li><a href="https://github.com/charleswest/Weight">https://github.com/charleswest/Weight</a></li>
-<li><a href="https://github.com/suyashkumar/seven-segment-ocr">https://github.com/suyashkumar/seven-segment-ocr</a></li>
-<li><a href="https://github.com/kazmiekr/GasPumpOCR.git">https://github.com/kazmiekr/GasPumpOCR.git</a></li>
-<li><a href="https://github.com/bikz05/digit-recognition">https://github.com/bikz05/digit-recognition</a></li>
-<li><a href="https://github.com/g-sari/pyautodigits">https://github.com/g-sari/pyautodigits</a></li>
-<li><a href="http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf">http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf</a></li>
-<li><a href="https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b">https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b)</a>)</li>
-<li><a href="https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37">https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37</a></li>
-<li><a href="https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea">https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea</a></li>
-<li><a href="https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/">https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/</a></li>
-<li><a href="https://www.programcreek.com/python/example/89294/cv2.watershed">https://www.programcreek.com/python/example/89294/cv2.watershed</a></li>
-<li><a href="https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/">https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/</a></li>
-<li><a href="https://www.sciencedirect.com/science/article/pii/S235248471930174X">https://www.sciencedirect.com/science/article/pii/S235248471930174X</a></li>
-</ul>
-<p>Street View House Number Dataset related solutions:</p>
-<ul>
-<li><a href="https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504">https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504</a></li>
-<li><a href="https://arxiv.org/pdf/1312.6082.pdf">https://arxiv.org/pdf/1312.6082.pdf</a></li>
-<li><a href="http://ufldl.stanford.edu/housenumbers/">http://ufldl.stanford.edu/housenumbers/</a></li>
-<li><a href="https://github.com/potterhsu/SVHNClassifier">https://github.com/potterhsu/SVHNClassifier</a></li>
-<li><a href="https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md">https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md</a></li>
-</ul>
-<p>Open Source Tensorflow Object Detection pipeline:</p>
-<ul>
-<li><a href="https://github.com/tensorflow/models/tree/master/research/object_detection">https://github.com/tensorflow/models/tree/master/research/object_detection</a></li>
-</ul>
-<p>Documentation about Google Cloud object detection solutions as service:</p>
-<ul>
-<li><a href="https://cloud.google.com/vision">https://cloud.google.com/vision</a></li>
-<li><a href="https://cloud.google.com/vision/automl/object-detection/docs">https://cloud.google.com/vision/automl/object-detection/docs</a></li>
-<li><a href="https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start">https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start</a></li>
-</ul>
 <p>My time in investigating and trying out existing solutions was roughly spent like this:</p>
 <ul>
 <li><code>30%</code> Classical computer vision techniques (OpenCV and similar)</li>

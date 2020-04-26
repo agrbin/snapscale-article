@@ -122,44 +122,6 @@ If an image that shows `78.2` gets recognized as `78.3`, the accuracy is not sat
 
 In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day and I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy. I didn't expect that I'll be trainig new models.
 
-#### Related work
-
-Classical computer vision techniques:
-
-* [https://github.com/jacnel/wetr](https://github.com/jacnel/wetr)
-* [https://github.com/NatholBMX/ScaleDigitizer](https://github.com/NatholBMX/ScaleDigitizer)
-* [https://github.com/charleswest/Weight](https://github.com/charleswest/Weight)
-* [https://github.com/suyashkumar/seven-segment-ocr](https://github.com/suyashkumar/seven-segment-ocr)
-* [https://github.com/kazmiekr/GasPumpOCR.git](https://github.com/kazmiekr/GasPumpOCR.git)
-* [https://github.com/bikz05/digit-recognition](https://github.com/bikz05/digit-recognition)
-* [https://github.com/g-sari/pyautodigits](https://github.com/g-sari/pyautodigits)
-* [http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf](http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf)
-* [https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b)](https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b))
-* [https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37](https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37)
-* [https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea](https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea)
-* [https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/](https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/)
-* [https://www.programcreek.com/python/example/89294/cv2.watershed](https://www.programcreek.com/python/example/89294/cv2.watershed)
-* [https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/](https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/)
-* [https://www.sciencedirect.com/science/article/pii/S235248471930174X](https://www.sciencedirect.com/science/article/pii/S235248471930174X)
-
-Street View House Number Dataset related solutions:
-
-* [https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504](https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504)
-* [https://arxiv.org/pdf/1312.6082.pdf](https://arxiv.org/pdf/1312.6082.pdf)
-* [http://ufldl.stanford.edu/housenumbers/](http://ufldl.stanford.edu/housenumbers/)
-* [https://github.com/potterhsu/SVHNClassifier](https://github.com/potterhsu/SVHNClassifier)
-* [https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md](https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md)
-
-Open Source Tensorflow Object Detection pipeline:
-
-* [https://github.com/tensorflow/models/tree/master/research/object_detection](https://github.com/tensorflow/models/tree/master/research/object_detection)
-
-Documentation about Google Cloud object detection solutions as service:
-
-* [https://cloud.google.com/vision](https://cloud.google.com/vision)
-* [https://cloud.google.com/vision/automl/object-detection/docs](https://cloud.google.com/vision/automl/object-detection/docs)
-* [https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start](https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start)
-
 My time in investigating and trying out existing solutions was roughly spent like this:
 
 - `30%` Classical computer vision techniques (OpenCV and similar)
