@@ -30,13 +30,13 @@ The goal of SnapScale is to instill a periodic weigh-in habbit in humans.
 
 A periodic - for example, daily - body weight measurement is already a good diet on its own.
 
-I didn't define a goal to help people lose weight, instead our goal is to help people be more aware. The awareness goal is a smaller, prerequisite goal for the greater goal - human health.
+We didn't define a goal to help people lose weight, instead our goal is to help people be more aware. The awareness goal is a smaller, prerequisite goal for the greater goal - human health.
 
 Taking a weight measurement has amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.
 
 ### How
 
-Smart scales like FitBit Aria are a great way achieve this. With [SnapScale](https://snapscale.life) I am giving the same product to people that currently don't own a smart scale. I am not saying that the app doesn't work with smart scales, it works with any scale that shows the measurement to the user!
+Smart scales like FitBit Aria are a great way achieve this. With [SnapScale](https://snapscale.life) we are giving the same product to people that currently don't own a smart scale. We are not saying that the app doesn't work with smart scales, it works with any scale that shows the measurement to the user!
 
 The weigh-in habit can be measured with two metrics:
 - Per-user percentage of days with a measurement (we want to maximize)
@@ -47,7 +47,7 @@ SnapScale is a simple application that has 3 screens:
 - view your previous measurements
 - settings screen that optionally sets up FitBit export and no-weigh-in reminders
 
-I intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.
+We intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.
 
 ## Implementation details worth sharing
 
@@ -150,12 +150,13 @@ Street View House Number Dataset related solutions:
 * [https://github.com/potterhsu/SVHNClassifier](https://github.com/potterhsu/SVHNClassifier)
 * [https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md](https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md)
 
-Open Source tensorflow Object Detection pipeline:
+Open Source Tensorflow Object Detection pipeline:
 
 * [https://github.com/tensorflow/models/tree/master/research/object_detection](https://github.com/tensorflow/models/tree/master/research/object_detection)
 
 Documentation about Google Cloud object detection solutions as service:
 
+* [https://cloud.google.com/vision](https://cloud.google.com/vision)
 * [https://cloud.google.com/vision/automl/object-detection/docs](https://cloud.google.com/vision/automl/object-detection/docs)
 * [https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start](https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start)
 
@@ -163,13 +164,18 @@ My time in investigating and trying out existing solutions was roughly spent lik
 
 - `30%` Classical computer vision techniques (OpenCV and similar)
 - `30%` SVHN dataset
-- `40%` Tensorflow custom solutions and transfer learning
+- `2%` Google Cloud Vision API
+- `38%` Tensorflow custom solutions and transfer learning
 
 I had to implement 5-6 different pipelines that will take my images and labels and convert it to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.
 
-At the end I was left with no options but to train something on my own... but I had only 400 images.
+I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 400 images.
 
-#### Iterations custom object detection solution
+#### Iterations with custom-trained object detection
+
+From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only.
+
+(image)
 
 Naive as I am, I started by training a model that solves everything at once. The input is the raw user image, and the output are labeled digit rectangles.
 
@@ -180,13 +186,50 @@ This hit two problems:
 
 The rotation problem is amplified by the fact that the mobile phone doesn't know how to orientat the image of something that is on the floor.
 
-I decided to split the problem to two phases: detecting the display first, and then detecting the digits in that display. Each phase can be evaluated on its own, which is useful in loss analysis.
+I decided to split the problem to two phases: detecting the display first, and then detecting the digits in the display. Each phase can be evaluated on its own, which is useful in loss analysis.
 
-#### Display+orientation detection
+#### Display detection
+
+My first attempt was predicting a single rectangle of a single class `display` on the input image. The training set was consisting of upright rotated images labeled with a single rectangle around the display. The AutoML Object Detection learned this with very good precision. At prediction time I would rotate the image 4 times and find the maximum confidence score for the display detection. I assumed that the maximum confidence would be achieved when the display is in upright rotation, just as it was in the training set.
+
+(image, upright detector evaluated on differently rotated images)
+
+Lol, no. I violated the property that training input distribution needs be aligned with the runtime input distribution. The model training saw only correctly rotated images, so the confidences that I was getting for the incorretly rotated images were rubbish - sometimes 0, sometimes 1.
+
+To fix this, I made the problem harder for the model. I expanded each image in the input to `K=4` new images with different rotations. Rotations are done in `360 / K = 90` increments, starting from the upright image. The display label on the upright image became `display_rotated_0_degrees`. On the next image it became `display_rotated_90_degrees`, then `display_rotated_180_degrees` and `display_rotated_270_degrees`. So the number of input images and output classes grew `K` times.
+
+(image, K-rotation input)
+
+During the prediction I would show the input image to the model. The output is the display location and how much it was rotated from the upward position.
+
+(image, K-rotation output)
+
+This worked much better, but it still had some precission losses. The final slam dunk for display+rotation detection was the voting system during prediction. Because the training phase recieved `K` rotations of each image, now it became OK to present the model with `K` rotations of the input image during prediction time. Each of the `K` rotations would give some answer to where is the model and how it's rotated.
+
+If the model was perfect, all evaluations would show the same location and rotation hints would yield different value (`0`, `90`, `180`, `270`) for each rotation. Subtracting model's rotation hint from the image rotation that was used we give the final answer for the expected rotation. Implementing a voting scheme here gave surprisingly good results.
+
+(image, voting)
+
+Note that the hyper-parameter `K` doesn't need to be `4`. If the model is perfect, the maximum angle distance of the hinted rotation and the correct rotation is `(360 / K) / 2`. If `K` is bigger, the display detection problem is more difficult. On the other hand, the outputs are closer to being upright rotated, which makes the digit detection problem less difficult.
+
+(image, comparison between two K values)
 
 #### Digit detection
 
-#### Serving
+Digit detection inputs an image and outputs rectangles labeled as digits: `digit_{0-9}`. I expected this to be simple for the AutoML Object Detection. Lol, no. Nothing is simple.
+
+I got many precision losses which I couldn't easily explain.
+
+(image)
+
+Looking through the open sourced `object_detection` Tensorflow on GitHub, which I suspected AutoML was using, I found a parameter
+[aug_rand_flip](https://github.com/tensorflow/models/blob/master/official/vision/detection/dataloader/shapemask_parser.py#L131). Based on the docs, the parameter expands input training images with their horizontal flips. This parameter can't be configured in AutoML Object Detection, but if they set it to true it would surely screw up 7-segment digit object detection.
+
+(image)
+
+Google Cloud support answered my question on [cloud-vision-discuss thread](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/cloud-vision-discuss/6mrbUdWcVys/Tv4nXRy8BAAJ), which helped me understand that AI Platform Object Detection and AutoML Object Detection are quite different.
+
+I submitted a training job to AI Platform (after building yet another pipeline to transform my data), and got excellent results. This was another surprise, because my training set was less than 400 images, and the AI Platform Object Detection trains from scratch - it doesn't do transfer learning.
 
 ## Conclusion
 
@@ -206,6 +249,6 @@ That is when I decided to embrace a new personal engineering principle - "Don't 
 
 ML is nothing but a tool.
 
-I think that even The Doors knew this when they played The Roadhouse Blues. They say "Yeah, keep your eyes on the **road**, your hand upon the **wheel**.".  For **road**, they probably meant **user goal** and for the **whell** they meant **the tools** - whatever tools are needed - a for-loop, a compiler, a database or a model.
+Even The Doors knew this when they played The Roadhouse Blues. They say "Yeah, keep your eyes on the **road**, your hand upon the **wheel**.".  For **road**, they probably meant **user goal** and for the **whell** they meant **the tools** - whatever tools are needed - a for-loop, a compiler, a database or an ML model.
 
-If you didn't yet, listen to the song! It is full of good engineering analogies!
+By the way this song is full of good engineering analogies!

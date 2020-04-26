@@ -1,7 +1,14 @@
 
     <html>
       <head>
-<title>SnapScale engineering report</title><link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
+  <title>SnapScale engineering report</title>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
+    <meta charset="utf-8">
+    <meta name="description" content="SnapScale engineering report">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <meta name="viewport" content="width=device-width, initial-scale=1">
       </head>
       <body>
@@ -21,10 +28,9 @@
 <li><a href="#labeling-ui">Labeling UI</a></li>
 <li><a href="#digit-recognition">Digit recognition</a><ul>
 <li><a href="#related-work">Related work</a></li>
-<li><a href="#iterations-custom-object-detection-solution">Iterations custom object detection solution</a></li>
-<li><a href="#displayorientation-detection">Display orientation detection</a></li>
-<li><a href="#digit-detection">Digit detection</a></li>
-<li><a href="#serving">Serving</a></li></ul></li></ul></li>
+<li><a href="#iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</a></li>
+<li><a href="#display-detection">Display detection</a></li>
+<li><a href="#digit-detection">Digit detection</a></li></ul></li></ul></li>
 <li><a href="#conclusion">Conclusion</a><ul>
 <li><a href="#ml-principles-that-i-break-and-i-wish-i-hadnt">ML principles that I break, and I wish I hadn't</a></li>
 <li><a href="#ml-principles-that-i-challenge">ML principles that I challenge</a></li>
@@ -49,10 +55,10 @@
 <h3 id="why">Why</h3>
 <p>The goal of SnapScale is to instill a periodic weigh-in habbit in humans.</p>
 <p>A periodic - for example, daily - body weight measurement is already a good diet on its own.</p>
-<p>I didn't define a goal to help people lose weight, instead our goal is to help people be more aware. The awareness goal is a smaller, prerequisite goal for the greater goal - human health.</p>
+<p>We didn't define a goal to help people lose weight, instead our goal is to help people be more aware. The awareness goal is a smaller, prerequisite goal for the greater goal - human health.</p>
 <p>Taking a weight measurement has amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.</p>
 <h3 id="how">How</h3>
-<p>Smart scales like FitBit Aria are a great way achieve this. With <a href="https://snapscale.life">SnapScale</a> I am giving the same product to people that currently don't own a smart scale. I am not saying that the app doesn't work with smart scales, it works with any scale that shows the measurement to the user!</p>
+<p>Smart scales like FitBit Aria are a great way achieve this. With <a href="https://snapscale.life">SnapScale</a> we are giving the same product to people that currently don't own a smart scale. We are not saying that the app doesn't work with smart scales, it works with any scale that shows the measurement to the user!</p>
 <p>The weigh-in habit can be measured with two metrics:</p>
 <ul>
 <li>Per-user percentage of days with a measurement (we want to maximize)</li>
@@ -64,7 +70,7 @@
 <li>view your previous measurements</li>
 <li>settings screen that optionally sets up FitBit export and no-weigh-in reminders</li>
 </ul>
-<p>I intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.</p>
+<p>We intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.</p>
 <h2 id="implementation-details-worth-sharing">Implementation details worth sharing</h2>
 <h3 id="ai-last">AI Last</h3>
 <p>Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. But, before diving into that part - I defined and implemented everything else first:</p>
@@ -139,12 +145,13 @@ instance_class: F1
 <li><a href="https://github.com/potterhsu/SVHNClassifier">https://github.com/potterhsu/SVHNClassifier</a></li>
 <li><a href="https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md">https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md</a></li>
 </ul>
-<p>Open Source tensorflow Object Detection pipeline:</p>
+<p>Open Source Tensorflow Object Detection pipeline:</p>
 <ul>
 <li><a href="https://github.com/tensorflow/models/tree/master/research/object_detection">https://github.com/tensorflow/models/tree/master/research/object_detection</a></li>
 </ul>
 <p>Documentation about Google Cloud object detection solutions as service:</p>
 <ul>
+<li><a href="https://cloud.google.com/vision">https://cloud.google.com/vision</a></li>
 <li><a href="https://cloud.google.com/vision/automl/object-detection/docs">https://cloud.google.com/vision/automl/object-detection/docs</a></li>
 <li><a href="https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start">https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start</a></li>
 </ul>
@@ -152,20 +159,42 @@ instance_class: F1
 <ul>
 <li><code>30%</code> Classical computer vision techniques (OpenCV and similar)</li>
 <li><code>30%</code> SVHN dataset</li>
-<li><code>40%</code> Tensorflow custom solutions and transfer learning</li>
+<li><code>2%</code> Google Cloud Vision API</li>
+<li><code>38%</code> Tensorflow custom solutions and transfer learning</li>
 </ul>
 <p>I had to implement 5-6 different pipelines that will take my images and labels and convert it to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.</p>
-<p>At the end I was left with no options but to train something on my own… but I had only 400 images.</p>
-<h4 id="iterations-custom-object-detection-solution">Iterations custom object detection solution</h4>
+<p>I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 400 images.</p>
+<h4 id="iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</h4>
+<p>From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only.</p>
+<p>(image)</p>
 <p>Naive as I am, I started by training a model that solves everything at once. The input is the raw user image, and the output are labeled digit rectangles.</p>
 <p>This hit two problems:</p>
 <p>1) the 7-segment digits sometimes change meaning with rotation (think 2 and 5)<br />
 1) the digit was sometimes too small on the original image for the model to pick up</p>
 <p>The rotation problem is amplified by the fact that the mobile phone doesn't know how to orientat the image of something that is on the floor.</p>
-<p>I decided to split the problem to two phases: detecting the display first, and then detecting the digits in that display. Each phase can be evaluated on its own, which is useful in loss analysis.</p>
-<h4 id="displayorientation-detection">Display+orientation detection</h4>
+<p>I decided to split the problem to two phases: detecting the display first, and then detecting the digits in the display. Each phase can be evaluated on its own, which is useful in loss analysis.</p>
+<h4 id="display-detection">Display detection</h4>
+<p>My first attempt was predicting a single rectangle of a single class <code>display</code> on the input image. The training set was consisting of upright rotated images labeled with a single rectangle around the display. The AutoML Object Detection learned this with very good precision. At prediction time I would rotate the image 4 times and find the maximum confidence score for the display detection. I assumed that the maximum confidence would be achieved when the display is in upright rotation, just as it was in the training set.</p>
+<p>(image, upright detector evaluated on differently rotated images)</p>
+<p>Lol, no. I violated the property that training input distribution needs be aligned with the runtime input distribution. The model training saw only correctly rotated images, so the confidences that I was getting for the incorretly rotated images were rubbish - sometimes 0, sometimes 1.</p>
+<p>To fix this, I made the problem harder for the model. I expanded each image in the input to <code>K=4</code> new images with different rotations. Rotations are done in <code>360 / K = 90</code> increments, starting from the upright image. The display label on the upright image became <code>display_rotated_0_degrees</code>. On the next image it became <code>display_rotated_90_degrees</code>, then <code>display_rotated_180_degrees</code> and <code>display_rotated_270_degrees</code>. So the number of input images and output classes grew <code>K</code> times.</p>
+<p>(image, K-rotation input)</p>
+<p>During the prediction I would show the input image to the model. The output is the display location and how much it was rotated from the upward position.</p>
+<p>(image, K-rotation output)</p>
+<p>This worked much better, but it still had some precission losses. The final slam dunk for display+rotation detection was the voting system during prediction. Because the training phase recieved <code>K</code> rotations of each image, now it became OK to present the model with <code>K</code> rotations of the input image during prediction time. Each of the <code>K</code> rotations would give some answer to where is the model and how it's rotated.</p>
+<p>If the model was perfect, all evaluations would show the same location and rotation hints would yield different value (<code>0</code>, <code>90</code>, <code>180</code>, <code>270</code>) for each rotation. Subtracting model's rotation hint from the image rotation that was used we give the final answer for the expected rotation. Implementing a voting scheme here gave surprisingly good results.</p>
+<p>(image, voting)</p>
+<p>Note that the hyper-parameter <code>K</code> doesn't need to be <code>4</code>. If the model is perfect, the maximum angle distance of the hinted rotation and the correct rotation is <code>(360 / K) / 2</code>. If <code>K</code> is bigger, the display detection problem is more difficult. On the other hand, the outputs are closer to being upright rotated, which makes the digit detection problem less difficult.</p>
+<p>(image, comparison between two K values)</p>
 <h4 id="digit-detection">Digit detection</h4>
-<h4 id="serving">Serving</h4>
+<p>Digit detection inputs an image and outputs rectangles labeled as digits: <code>digit_{0-9}</code>. I expected this to be simple for the AutoML Object Detection. Lol, no. Nothing is simple.</p>
+<p>I got many precision losses which I couldn't easily explain.</p>
+<p>(image)</p>
+<p>Looking through the open sourced <code>object_detection</code> Tensorflow on GitHub, which I suspected AutoML was using, I found a parameter<br />
+<a href="https://github.com/tensorflow/models/blob/master/official/vision/detection/dataloader/shapemask_parser.py#L131">aug<em>rand</em>flip</a>. Based on the docs, the parameter expands input training images with their horizontal flips. This parameter can't be configured in AutoML Object Detection, but if they set it to true it would surely screw up 7-segment digit object detection.</p>
+<p>(image)</p>
+<p>Google Cloud support answered my question on <a href="https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/cloud-vision-discuss/6mrbUdWcVys/Tv4nXRy8BAAJ">cloud-vision-discuss thread</a>, which helped me understand that AI Platform Object Detection and AutoML Object Detection are quite different.</p>
+<p>I submitted a training job to AI Platform (after building yet another pipeline to transform my data), and got excellent results. This was another surprise, because my training set was less than 400 images, and the AI Platform Object Detection trains from scratch - it doesn't do transfer learning.</p>
 <h2 id="conclusion">Conclusion</h2>
 <h3 id="ml-principles-that-i-break-and-i-wish-i-hadnt">ML principles that I break, and I wish I hadn't</h3>
 <h3 id="ml-principles-that-i-challenge">ML principles that I challenge</h3>
@@ -177,8 +206,8 @@ instance_class: F1
 <p>I hated it. I was full with disagreement. On the other hand, in the audience, I saw ripples of tough-looking head-nodding experts getting high on agreement with the speaker.</p>
 <p>That is when I decided to embrace a new personal engineering principle - "Don't go AI first - always stay user first."</p>
 <p>ML is nothing but a tool.</p>
-<p>I think that even The Doors knew this when they played The Roadhouse Blues. They say "Yeah, keep your eyes on the <strong>road</strong>, your hand upon the <strong>wheel</strong>.".  For <strong>road</strong>, they probably meant <strong>user goal</strong> and for the <strong>whell</strong> they meant <strong>the tools</strong> - whatever tools are needed - a for-loop, a compiler, a database or a model.</p>
-<p>If you didn't yet, listen to the song! It is full of good engineering analogies!</p>
+<p>Even The Doors knew this when they played The Roadhouse Blues. They say "Yeah, keep your eyes on the <strong>road</strong>, your hand upon the <strong>wheel</strong>.".  For <strong>road</strong>, they probably meant <strong>user goal</strong> and for the <strong>whell</strong> they meant <strong>the tools</strong> - whatever tools are needed - a for-loop, a compiler, a database or an ML model.</p>
+<p>By the way this song is full of good engineering analogies!</p>
 
         </div>
         <style type='text/css'>body {
