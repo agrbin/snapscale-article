@@ -1,20 +1,18 @@
 ## Introduction 
 
-I started drilling on SnapScale in mid-2018 with a goal of **creating a weigh-in habit** for a friend of mine. The idea is to convert an old school scale into a smart **using phone's camera** and OCR. The users don't need to look at the number in that moment, the phone does the job and writes the number to the log, optionally user's FitBit profile.
+I started drilling on SnapScale in mid-2018 with a goal of **creating a weigh-in habit** for a friend of mine. The idea is to convert an old school scale into a smart **using phone's camera** and OCR. The user doesn't even need to look at the number in the moment, the phone does the job and writes the number to the log, optionally user's FitBit profile.
 
-If you're looking for a demo - it's here - [SnapScale - weigh in daily](https://snapscale.life).
+Feel free to try it out - no log-in or account creation is required - [SnapScale - build a weight-in habit](https://snapscale.life).
 
-This report gives a timeline of a full-stack project using the "sexy" ML tools. Spoiler - there is nothing sexy about it :) the usual engineering tasks are dominating the timeline.
-
-The sexiness and rushing into ML only prolonged the project.
+This report gives a timeline of an end to end project heavly relying on ML.
 
 ### The goal of this report
 
 I am writing this report to share my thoughts about:
 
-- ML principles for real end-to-end applications
-- The state of ML tools today available on Google Cloud mostly
-- Rotation-invariant algorithm to detect a display and read out the digits
+- ML principles for real-world applications
+- The state of ML tools today available on Google Cloud
+- Rotation-invariant algorithm to detect a display and OCRing the digits
 
 ### Targeted audience
 
@@ -28,33 +26,39 @@ Less likely, if you are using [the photo weigh-in application](https://snapscale
 
 The goal of SnapScale is to instill a weigh-in habit in humans.
 
-We didn't define a goal to help people lose weight, instead our goal is to help people be more aware. The awareness goal is a smaller, prerequisite goal for the bigger goal of actual taking actions if health is threatened.
+The awareness goal is a smaller, prerequisite goal for the bigger goal of actually taking action if health is threatened.
 
 Taking a weight measurement has amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.
 
 ### How
 
-Smart scales like FitBit Aria are a great way achieve this. With [SnapScale](https://snapscale.life) we are giving the same product to people that currently don't own a smart scale. We are not saying that the app doesn't work with smart scales, it works with any scale that shows the measurement to the user!
+Smart scales like FitBit Aria are a great way achieve this. With [SnapScale](https://snapscale.life) we are giving the same product to people that don't own a smart scale.
+
+SnapScale lets you log the weight measurement by taking a photo of scale's display while you're standing on the scale. User doesn't need to lean down - a photo taken from the normal hand height works. The AI model reads out the digits and logs the weight.
 
 The weigh-in habit can be measured with two metrics:
+
 - Per-user percentage of days with a measurement (we want to maximize)
 - Per-user time spent in the App (we want to minimize)
 
 SnapScale is a simple application that has 3 screens:
+
 - submit a new weight-in measurement that launches a camera
 - view your previous measurements
 - settings screen that optionally sets up FitBit export and no-weigh-in reminders
 
-We intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.
+(image, home screen)
 
-## App implementation details worth sharing
+We intentionally reduced clutter that could waste user's time in the app. There is no login required or account creating to start using the app. Optionally user wants to export their data to FitBit, the login with FitBit is required.
+
+## App implementation
 
 ### AI Last
 
-Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. But, before diving into that part - I defined and implemented everything else first:
+Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. But, in this project I tried adopting the "AI Last" principle. Before diving into AI part I first completed:
 
-- the complete mobile Application including photo-based weight-logging, reminders, and export to FitBit.
-- launching the application with a fake backend - each image would trigger a notification on my phone for me to read the numbers instead of the ML model
+- a mobile app including photo-based weight-logging, reminders, and export to FitBit.
+- launching the app with a fake backend - each image would trigger a notification on my phone for me to read the numbers instead of the ML model
 - implementing the UI for reading the numbers from images and labeling them
 - privacy policy around images that are uploaded to the backend
 - iterating on the usability of application
@@ -64,23 +68,21 @@ Engineering-wise, the central and most "sexy" part of the application is the com
 Only then, when everything was ready and it seemed that the product may work, I tackled the AI:
 - picking the technology and implementing the image recognition solution
 
-This is what I mean by AI comes last. Even if using an existing OCR was successful, I would still do all the same steps. The existing OCR library would still have to answer to the same requests and fulfill the same metrics.
+This is what I mean by AI comes last.
 
 By the time I started iterating on the model, I had seen ~450 user images and had a good idea of all kinds of corner cases that might happen. I also had a dataset of images, defined metrics, debugging frontend and evaluation framework in place.
 
-One risk of this approach is betting everything on the fact that the last step (AI) will work. It could've happened that OCR at the end would be too difficult to implement, and the project would fall apart.
+One risk of this approach is betting everything on the fact that the last step (AI) will work. It could've happened that OCR at the end would be too difficult to implement, and the project would "fail slow".
 
 ### The app
 
 The application is built using [Expo](https://expo.io) framework which is a wrapper around [React Native](https://reactnative.dev/).  It's suitable for fast prototyping which is exactly what I needed. Same codebase is executed on both platforms. If Expo would have a book it would be called "App development for dummies".
 
-There is really nothing interesting in the client code implementation here.
-
 ### Backend
 
 The app needs a backend because the logs and images are stored serverside. There is no authentication of any kind, but there is a lightweight register step.
 
-On app install, user needs to agree on terms of use and sign using a captcha. The successful captcha challenge gives to the application a session token that is later required to communicate with the server. This was a good way to design an application + backend storage without requiring a login.
+On app install, user needs to agree on terms of use and sign using a captcha. The successful captcha challenge gives to the application a session token that is later required to communicate with the server. I find this useful when designing an application + backend storage without requiring a login.
 
 Although login sounds like a good alternative, I suspected it would repel some users due to sensitivity of the images that are being sent.
 
@@ -94,11 +96,11 @@ instance_class: F1
 
 The database for metadata used is [Google Cloud Datastore](https://cloud.google.com/datastore) and for image store I used [Google Cloud Storage](https://cloud.google.com/storage). Both systems are free-of-charge for prototypes with low amount of requests.
 
-The natural opportunity here is to move the model execution to the client, which will remove the need for backend, and simplify privacy policy.
+The natural next step is to move the model execution to the client, which will remove the need for backend, and simplify privacy policy.
 
 ### Labeling UI
 
-When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labeling UI. The Labeling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share y coordinates, and all have the same dimensions. This is possible because prior to labeling the digits, the image is rotated in such way that the display is upright.
+When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labeling UI. The Labeling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share `y` coordinates, and all have the same dimensions. This is possible because prior to labeling the digits, the labeler rotates the image in such way that the display is upright.
 
 (image)
 
@@ -110,17 +112,17 @@ I manually processed ~450 images so far. The Labeling UI is implemented in HTML5
 
 The images without visible weight measurement are discarded. All other images are labeled and split into training/test/validation with 70/10/20 ratios.
 
-Having only good images in the dataset, to evaluate the algorithm I defined the accuracy metric as follows:
+Having only valid images in the dataset, I defined `accuracy` to be my main metric:
 
 - **accuracy**: percentage of images in which all digits are correctly identified
 
 If an image that shows `78.2` gets recognized as `78.3`, the accuracy is not satifsfied.
 
-## Image recognition implementation details
+## Image recognition
 
 In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day and I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy. I didn't expect that I'll be trainig new models.
 
-### Related work
+### Existing work
 
 Classical computer vision techniques on GitHub:
 
@@ -231,11 +233,55 @@ Google Cloud support answered my question on [cloud-vision-discuss thread](https
 
 I submitted a training job to AI Platform (after building yet another pipeline to transform my data), and got excellent results. This was another surprise, because my training set was less than 400 images, and the AI Platform Object Detection trains from scratch - it doesn't do transfer learning.
 
+### Results
+
+In the last iteration I used 468 images:
+
+- 317 images in training set
+- 50 images in test set
+- 101 images in validation set
+
+I never saw debug visualizations or debug log of the images in validation set - the evaluation pipeline would never produce them.
+
+The final accuracies (the weight value correctly recognized):
+
+- 98.74% in training set
+- 94.00% in test set
+- 93.07% in validation set
+
+The detection latency is ~15 seconds, mostly because I optimized serving to be price efficient (free).
+
 ## Conclusion
 
-### ML principles that I break, and I wish I hadn't
+### The state of Object Detection support
 
-### ML principles that I challenge
+I am surprised by the simplicity and efficiency of Google Cloud AutoML Object Detection. When it comes to pricing, each account gets $300 free quota which is enough to train 5-10 model iterations. If you are lucky to get the result you need in that quota, everything else can be free - they give the ability for you to serve the trained model in Docker, TF.js or in mobile app.
+
+Using this free quota I managed to train a succcessful weight scale measurement OCR system.
+
+### ML principles I violated and got burnt
+
+**The distribution of data during prediction must align with the distirbution of data during training.**
+
+I broke this principle multiple times. First, I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. Lol, no. The transfer learning from SVHN model to my problem space also didn't end up working.
+
+(image, difference between svhn and digits)
+
+During display orinentation detection, I broke this principle again - I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - the score was rubbish, sometimes high sometimes low.
+
+When it comes to data collection phase, I think I got this principle right. To collect the training dataset I built the application in its final form, with a fake model (myself as human labeler). Once the model was ready, I justed swapped out the human.
+
+**Be evaluation driven.**
+
+Early in the project when I was evaluating related work, I would try to run the existing model and then feed it with an image or two to see how it works. Only when I started my own quality iterations I built a pipeline that runs the model on all train/test/val images and reports the metrics.
+
+It would be better if I defined a container interface early on that listens to the image request on HTTP and gives a standardised JSON output. Then I would have a Docker image for every related work I managed to successfully run, persisted together with evaluation results. Having not done so, I only have weak (empirical) evidence that the related work models didn't work on my problem space.
+
+When it comes to running things from other research-y works, the dependencies pose a big chalelnge. Docker solved this problem completely, and I am looking forward to seeing Docker adoption in academia.
+
+**Be loss analysis driven.**
+
+During loss analysis, it would happen to me that after I've seen 2 similar failures I would rush into implementing a hotfix for that specific pattern. This hotfix would always get reverted. Implementing hotfixes for specific losses (instead of biggest loss patterns) only increases the model complexity and, in my experience, it doesn't reflect to wins in validation set metric. The lesson learned here is to be patient, finish analyzing all losses that you prepared and then decide on the next step. Implement the next steps the day after.
 
 ### Parting words
 
@@ -243,12 +289,12 @@ On Monday, 2020-10-28 I was in a room in downtown Manhattan packed with excited 
 
 > You've gotta use ML! If you don't, chances are that your competitors will.
 
-I hated it. I was full with disagreement. On the other hand, in the audience, I saw ripples of tough-looking head-nodding experts getting high on agreement with the speaker.
+I hated it. I was full with disagreement. On the other hand, in the audience I saw ripples of head-nodding folks getting high on agreement with the speaker.
 
-I decided to embrace a different engineering principle - "Don't go AI first - always stay user first."
+I decided to embrace a different engineering principle - "Don't go AI first - always stay user first". ML is a tool, not a goal.
 
-ML is nothing but a tool.
+Even The Doors knew this when they played The Roadhouse Blues. They say:
 
-Even The Doors knew this when they played The Roadhouse Blues. They say "Yeah, keep your eyes on the **road**, your hand upon the **wheel**.".  For **road**, they probably meant **user goal** and for the **whell** they meant **the tools** - whatever tools are needed - a for-loop, a compiler, a database or an ML model.
+> Yeah, keep your eyes on the road, your hand upon the wheel.
 
-By the way this song is full of good engineering analogies!
+For **road**, they probably meant **user goal** and for **whell** they meant **the tools** - whatever tools are needed - a for-loop, a compiler, a database or an ML model.
