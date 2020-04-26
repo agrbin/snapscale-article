@@ -21,7 +21,7 @@
 <li><a href="#ai-last">AI Last</a></li>
 <li><a href="#the-app">The app</a></li>
 <li><a href="#backend">Backend</a></li>
-<li><a href="#labeling-ui">Labeling UI</a></li></ul></li>
+<li><a href="#labelling-ui">Labelling UI</a></li></ul></li>
 <li><a href="#image-recognition">Image recognition</a><ul>
 <li><a href="#existing-work">Existing work</a></li>
 <li><a href="#iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</a><ul>
@@ -60,7 +60,10 @@
 <li>view your previous measurements</li>
 <li>settings screen that optionally sets up FitBit export and no-weigh-in reminders</li>
 </ul>
-<p>(image, home screen)</p>
+<p align="center">
+  <img src="image1.png" width="400" alt="SnapScale application home screen" border="1px">
+</p>
+<p>Tapping the weigh-in button launches the camera.</p>
 <p>We intentionally reduced clutter that could waste user's time in the app. There is no login required or account creating to start using the app. Optionally if user wants to export their data to FitBit, the login with FitBit is required.</p>
 <h2 id="app-implementation">App implementation</h2>
 <h3 id="ai-last">AI Last</h3>
@@ -68,7 +71,7 @@
 <ul>
 <li>Built a mobile app for photo-based weight-logging, reminders, and export to FitBit.</li>
 <li>Launched th with a fake backend - each image would trigger a notification on my phone for me to read the numbers instead of the ML model</li>
-<li>Implemented the UI for reading the numbers from images and labeling them</li>
+<li>Implemented the UI for reading the numbers from images and labelling them</li>
 <li>Implemented the evaluation framework for image recognition problem</li>
 </ul>
 <p>Only then, when everything was ready and it seemed that the product may work, I tackled the AI:</p>
@@ -91,12 +94,16 @@ instance_class: F1
 </code></pre>
 <p>The database for metadata used is <a href="https://cloud.google.com/datastore">Google Cloud Datastore</a> and for image store I used <a href="https://cloud.google.com/storage">Google Cloud Storage</a>. Both systems are free-of-charge for prototypes with low amount of requests. Also, no setup is needed.</p>
 <p>The natural next step is to move the model execution to the client, which will remove a need for a backend, and simplify privacy policy.</p>
-<h3 id="labeling-ui">Labeling UI</h3>
-<p>When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labeling UI. The Labeling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share <code>y</code> coordinates, and all have the same dimensions. This is possible because prior to labeling the digits, the labeler rotates the image in such way that the display is upright.</p>
-<p>(image)</p>
+<h3 id="labelling-ui">Labelling UI</h3>
+<p>When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labelling UI. The Labelling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share <code>y</code> coordinates, and all have the same dimensions. This is possible because prior to labelling the digits, the labeler rotates the image in such way that the display is upright.</p>
+<p align="center">
+  <img src="image2.png" alt="SnapScale Labelling UI screenshot" border="1px">
+</p>
 <p>Note that I made an assumption that the digits are always monospace. Well :) Assumption turns out to be the mother of all fuckups.</p>
-<p>(image)</p>
-<p>I manually labeled ~450 images so far. Each image has 3-4 digits, each digit is two mouse clicks. The Labeling UI is implemented in HTML5, mainly using Canvas API in JavaScript. The image transformation logic heavily uses affine transformation matrices - <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix">DOMMatrix</a>.</p>
+<p align="center">
+  <img src="image3.png" alt="Non-monospace display digit" border="1px">
+</p>
+<p>I manually labeled ~450 images so far. Each image has 3-4 digits, each digit is two mouse clicks. The Labelling UI is implemented in HTML5, mainly using Canvas API in JavaScript. The image transformation logic heavily uses affine transformation matrices - <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix">DOMMatrix</a>.</p>
 <p>The images without visible weight measurement are discarded. All other images are labeled and split into training/test/validation with 70/10/20 ratios.</p>
 <p>Having only valid images in the dataset, I defined <code>accuracy</code> to be my main metric:</p>
 <ul>
@@ -156,7 +163,6 @@ instance_class: F1
 <p>I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 400 images.</p>
 <h3 id="iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</h3>
 <p>From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only. No setup, no config.</p>
-<p>(image)</p>
 <p>Naive as I am, I started by training a model that solves everything at once. The input is the raw user image, and the output are labeled digit rectangles.</p>
 <p>This hit two problems:</p>
 <p>1) the 7-segment digits sometimes change meaning with rotation (think 2 and 5)<br />
@@ -168,12 +174,15 @@ instance_class: F1
 <p>Each phase can be evaluated on its own, which is useful in loss analysis.</p>
 <h4 id="display-detection">Display detection</h4>
 <p>My first attempt was predicting a single rectangle of a single class <code>display</code> on the input image. The training set was consisting of upright rotated images labeled with a single rectangle around the display. The AutoML Object Detection learned this with very good precision. At prediction time I would rotate the image 4 times and find the maximum confidence score for the display detection. I assumed that the maximum confidence would be achieved when the display is in upright rotation, just as it was in the training set.</p>
-<p>(image, upright detector evaluated on differently rotated images)</p>
+<p align="center">
+  <img src="image4.png" alt="SnapScale application home screen" border="1px">
+</p>
+<p>The green detection box represents the input that was expected by the model, and the score is high. The red detection boxes have scores that have no guarantees.</p>
 <p>Lol, no. I violated the property that training input distribution needs be aligned with the runtime input distribution. The model training saw only correctly rotated images, so the confidences that I was getting for the incorretly rotated images were rubbish - sometimes 0, sometimes 1.</p>
 <p>To fix this, I made the problem harder for the model. I expanded each image in the input to <code>K=4</code> new images with different rotations. Rotations are done in <code>360 / K = 90</code> increments, starting from the upright image. The display label on the upright image became <code>display_rotated_0_degrees</code>. On the next image it became <code>display_rotated_90_degrees</code>, then <code>display_rotated_180_degrees</code> and <code>display_rotated_270_degrees</code>. So the number of input images and output classes grew <code>K</code> times.</p>
-<p>(image, K-rotation input)</p>
+<p>(image5, K-rotation input)</p>
 <p>During the prediction I would show the input image to the model. The output is the display location and how much it was rotated from the upward position.</p>
-<p>(image, K-rotation output)</p>
+<p>(image6, K-rotation output)</p>
 <p>This worked much better, but it still had some precission losses. The final slam dunk for display+rotation detection was the voting system during prediction. Because the training phase recieved <code>K</code> rotations of each image, now it became OK to present the model with <code>K</code> rotations of the input image during prediction time. Each of the <code>K</code> rotations would give some answer to where is the display and how it's rotated.</p>
 <p>If the model was perfect, all evaluations would show the same display location, and rotation hints would yield different value (<code>0</code>, <code>90</code>, <code>180</code>, <code>270</code>) for each rotation.</p>
 <p>The final answer is given by subtracting model's rotation hint from the image rotation given to the model. Implementing a voting scheme here gave surprisingly good results.</p>

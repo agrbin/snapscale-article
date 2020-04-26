@@ -40,7 +40,11 @@ SnapScale is a simple application that has 3 screens:
 - view your previous measurements
 - settings screen that optionally sets up FitBit export and no-weigh-in reminders
 
-(image, home screen)
+<p align="center">
+  <img src="image1.png" width="400" alt="SnapScale application home screen" border="1px">
+</p>
+
+Tapping the weigh-in button launches the camera.
 
 We intentionally reduced clutter that could waste user's time in the app. There is no login required or account creating to start using the app. Optionally if user wants to export their data to FitBit, the login with FitBit is required.
 
@@ -52,7 +56,7 @@ Engineering-wise, the central and most "sexy" part of the application is the com
 
 - Built a mobile app for photo-based weight-logging, reminders, and export to FitBit.
 - Launched th with a fake backend - each image would trigger a notification on my phone for me to read the numbers instead of the ML model
-- Implemented the UI for reading the numbers from images and labeling them
+- Implemented the UI for reading the numbers from images and labelling them
 - Implemented the evaluation framework for image recognition problem
 
 Only then, when everything was ready and it seemed that the product may work, I tackled the AI:
@@ -88,17 +92,21 @@ The database for metadata used is [Google Cloud Datastore](https://cloud.google.
 
 The natural next step is to move the model execution to the client, which will remove a need for a backend, and simplify privacy policy.
 
-### Labeling UI
+### Labelling UI
 
-When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labeling UI. The Labeling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share `y` coordinates, and all have the same dimensions. This is possible because prior to labeling the digits, the labeler rotates the image in such way that the display is upright.
+When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labelling UI. The Labelling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share `y` coordinates, and all have the same dimensions. This is possible because prior to labelling the digits, the labeler rotates the image in such way that the display is upright.
 
-(image)
+<p align="center">
+  <img src="image2.png" alt="SnapScale Labelling UI screenshot" border="1px">
+</p>
 
 Note that I made an assumption that the digits are always monospace. Well :) Assumption turns out to be the mother of all fuckups.
 
-(image)
+<p align="center">
+  <img src="image3.png" alt="Non-monospace display digit" border="1px">
+</p>
 
-I manually labeled ~450 images so far. Each image has 3-4 digits, each digit is two mouse clicks. The Labeling UI is implemented in HTML5, mainly using Canvas API in JavaScript. The image transformation logic heavily uses affine transformation matrices - [DOMMatrix](https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix).
+I manually labeled ~450 images so far. Each image has 3-4 digits, each digit is two mouse clicks. The Labelling UI is implemented in HTML5, mainly using Canvas API in JavaScript. The image transformation logic heavily uses affine transformation matrices - [DOMMatrix](https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix).
 
 The images without visible weight measurement are discarded. All other images are labeled and split into training/test/validation with 70/10/20 ratios.
 
@@ -169,8 +177,6 @@ I didn't expect to get in a situation where I'll be (re)training new models. Esp
 
 From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only. No setup, no config.
 
-(image)
-
 Naive as I am, I started by training a model that solves everything at once. The input is the raw user image, and the output are labeled digit rectangles.
 
 This hit two problems:
@@ -191,17 +197,21 @@ Each phase can be evaluated on its own, which is useful in loss analysis.
 
 My first attempt was predicting a single rectangle of a single class `display` on the input image. The training set was consisting of upright rotated images labeled with a single rectangle around the display. The AutoML Object Detection learned this with very good precision. At prediction time I would rotate the image 4 times and find the maximum confidence score for the display detection. I assumed that the maximum confidence would be achieved when the display is in upright rotation, just as it was in the training set.
 
-(image, upright detector evaluated on differently rotated images)
+<p align="center">
+  <img src="image4.png" alt="SnapScale application home screen" border="1px">
+</p>
+
+The green detection box represents the input that was expected by the model, and the score is high. The red detection boxes have scores that have no guarantees.
 
 Lol, no. I violated the property that training input distribution needs be aligned with the runtime input distribution. The model training saw only correctly rotated images, so the confidences that I was getting for the incorretly rotated images were rubbish - sometimes 0, sometimes 1.
 
 To fix this, I made the problem harder for the model. I expanded each image in the input to `K=4` new images with different rotations. Rotations are done in `360 / K = 90` increments, starting from the upright image. The display label on the upright image became `display_rotated_0_degrees`. On the next image it became `display_rotated_90_degrees`, then `display_rotated_180_degrees` and `display_rotated_270_degrees`. So the number of input images and output classes grew `K` times.
 
-(image, K-rotation input)
+(image5, K-rotation input)
 
 During the prediction I would show the input image to the model. The output is the display location and how much it was rotated from the upward position.
 
-(image, K-rotation output)
+(image6, K-rotation output)
 
 This worked much better, but it still had some precission losses. The final slam dunk for display+rotation detection was the voting system during prediction. Because the training phase recieved `K` rotations of each image, now it became OK to present the model with `K` rotations of the input image during prediction time. Each of the `K` rotations would give some answer to where is the display and how it's rotated.
 
