@@ -1,6 +1,6 @@
 ## Introduction 
 
-I started drilling on SnapScale in mid-2018 with a goal of **creating a weigh-in habit** for a friend of mine. The idea is to convert an old school scale into a smart **using phone's camera** and OCR. The user doesn't even need to look at the number in the moment, the phone does the job and writes the number to the log, optionally user's FitBit profile.
+I started drilling on SnapScale in mid-2018 with a goal of **creating a weigh-in habit** for a friend of mine. The idea is to convert an old school scale into a smart one **using phone's camera**. User scans the weight measurement with a phone camera and the app recognizes the value, logs it, and optionally exports to user's FitBit profile.
 
 Feel free to try it out - no log-in or account creation is required - [SnapScale - build a weight-in habit](https://snapscale.life).
 
@@ -12,7 +12,7 @@ I am writing this report to share my thoughts about:
 
 - ML principles for real-world applications
 - The state of ML tools today available on Google Cloud
-- Rotation-invariant algorithm to detect a display and OCRing the digits
+- Rotation-invariant algorithm to detect a display on the image and read the weight value written on it
 
 ### Targeted audience
 
@@ -26,8 +26,6 @@ Less likely, if you are using [the photo weigh-in application](https://snapscale
 
 The goal of SnapScale is to instill a weigh-in habit in humans.
 
-The awareness goal is a smaller, prerequisite goal for the bigger goal of actually taking action if health is threatened.
-
 Taking a weight measurement has amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.
 
 ### How
@@ -35,11 +33,6 @@ Taking a weight measurement has amplified awareness effect if the number is logg
 Smart scales like FitBit Aria are a great way achieve this. With [SnapScale](https://snapscale.life) we are giving the same product to people that don't own a smart scale.
 
 SnapScale lets you log the weight measurement by taking a photo of scale's display while you're standing on the scale. User doesn't need to lean down - a photo taken from the normal hand height works. The AI model reads out the digits and logs the weight.
-
-The weigh-in habit can be measured with two metrics:
-
-- Per-user percentage of days with a measurement (we want to maximize)
-- Per-user time spent in the App (we want to minimize)
 
 SnapScale is a simple application that has 3 screens:
 
@@ -49,28 +42,25 @@ SnapScale is a simple application that has 3 screens:
 
 (image, home screen)
 
-We intentionally reduced clutter that could waste user's time in the app. There is no login required or account creating to start using the app. Optionally user wants to export their data to FitBit, the login with FitBit is required.
+We intentionally reduced clutter that could waste user's time in the app. There is no login required or account creating to start using the app. Optionally if user wants to export their data to FitBit, the login with FitBit is required.
 
 ## App implementation
 
 ### AI Last
 
-Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. But, in this project I tried adopting the "AI Last" principle. Before diving into AI part I first completed:
+Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. But, in this project I tried adopting the "AI Last" principle. Before diving into OCR implementation details I first:
 
-- a mobile app including photo-based weight-logging, reminders, and export to FitBit.
-- launching the app with a fake backend - each image would trigger a notification on my phone for me to read the numbers instead of the ML model
-- implementing the UI for reading the numbers from images and labeling them
-- privacy policy around images that are uploaded to the backend
-- iterating on the usability of application
-- defining the evaluation metrics for the image recognition subproblem
-- implementing the evaluation framework for image recognition
+- Built a mobile app for photo-based weight-logging, reminders, and export to FitBit.
+- Launched th with a fake backend - each image would trigger a notification on my phone for me to read the numbers instead of the ML model
+- Implemented the UI for reading the numbers from images and labeling them
+- Implemented the evaluation framework for image recognition problem
 
 Only then, when everything was ready and it seemed that the product may work, I tackled the AI:
 - picking the technology and implementing the image recognition solution
 
 This is what I mean by AI comes last.
 
-By the time I started iterating on the model, I had seen ~450 user images and had a good idea of all kinds of corner cases that might happen. I also had a dataset of images, defined metrics, debugging frontend and evaluation framework in place.
+By the time I started iterating on the model, I labeled ~450 images and had a good idea of all kinds of corner cases that might happen. I also had a dataset of images, defined metrics, debugging frontend and evaluation framework in place.
 
 One risk of this approach is betting everything on the fact that the last step (AI) will work. It could've happened that OCR at the end would be too difficult to implement, and the project would "fail slow".
 
@@ -80,13 +70,13 @@ The application is built using [Expo](https://expo.io) framework which is a wrap
 
 ### Backend
 
-The app needs a backend because the logs and images are stored serverside. There is no authentication of any kind, but there is a lightweight register step.
+Backend is used to store weight logs and images. The clients don't do any authentication, but there is a lightweight handshake step.
 
-On app install, user needs to agree on terms of use and sign using a captcha. The successful captcha challenge gives to the application a session token that is later required to communicate with the server. I find this useful when designing an application + backend storage without requiring a login.
+On app install, user agrees to terms of use by signing with a captcha. The successful captcha challenge gives a permanent session token to the application that is later required to communicate with the backend. I find this trick useful when designing an application + backend storage without requiring a login.
 
-Although login sounds like a good alternative, I suspected it would repel some users due to sensitivity of the images that are being sent.
+Although login sounds like a good alternative, I suspect it would repel some users due to sensitivity of the images that are being sent. This way we keep user images stripped of any other kind of PII.
 
-For a backend, I deployed a [NodeJS](https://nodejs.org) application on [Google App Engine](https://cloud.google.com/appengine).  To get a free-of-charge deployment for prototypes with low amount of requests, the trick is to use `standard` environment with `F1` instance clasee. The `app.yaml` config looks like this:
+Backend is deployed as a [NodeJS](https://nodejs.org) application on [Google App Engine](https://cloud.google.com/appengine). To get a free-of-charge deployment for prototypes with low amount of requests, the trick is to use `standard` environment with `F1` instance clasee. The `app.yaml` config looks like this:
 
 ```
 runtime: nodejs12
@@ -94,9 +84,9 @@ env: standard
 instance_class: F1
 ```
 
-The database for metadata used is [Google Cloud Datastore](https://cloud.google.com/datastore) and for image store I used [Google Cloud Storage](https://cloud.google.com/storage). Both systems are free-of-charge for prototypes with low amount of requests.
+The database for metadata used is [Google Cloud Datastore](https://cloud.google.com/datastore) and for image store I used [Google Cloud Storage](https://cloud.google.com/storage). Both systems are free-of-charge for prototypes with low amount of requests. Also, no setup is needed.
 
-The natural next step is to move the model execution to the client, which will remove the need for backend, and simplify privacy policy.
+The natural next step is to move the model execution to the client, which will remove a need for a backend, and simplify privacy policy.
 
 ### Labeling UI
 
@@ -104,11 +94,11 @@ When a new image is submitted to the system, and the model is not cofident about
 
 (image)
 
-Note that I made an assumption that the digits are monospace. Well :) Assumption turns out to be the mother of all fuckups.
+Note that I made an assumption that the digits are always monospace. Well :) Assumption turns out to be the mother of all fuckups.
 
 (image)
 
-I manually processed ~450 images so far. The Labeling UI is implemented in HTML5, mainly using Canvas API in JavaScript. The image transformation is encoded using the affine transformation matrix, [DOMMatrix](https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix).
+I manually labeled ~450 images so far. Each image has 3-4 digits, each digit is two mouse clicks. The Labeling UI is implemented in HTML5, mainly using Canvas API in JavaScript. The image transformation logic heavily uses affine transformation matrices - [DOMMatrix](https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix).
 
 The images without visible weight measurement are discarded. All other images are labeled and split into training/test/validation with 70/10/20 ratios.
 
@@ -120,9 +110,11 @@ If an image that shows `78.2` gets recognized as `78.3`, the accuracy is not sat
 
 ## Image recognition
 
-In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day and I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy. I didn't expect that I'll be trainig new models.
+In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day all labeled manually. I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy.
 
 ### Existing work
+
+I found a bunch of existing related models that would in theory solve our problem, but reproducibility was very low.
 
 Classical computer vision techniques on GitHub:
 
@@ -169,13 +161,13 @@ My time in investigating and trying out existing solutions was roughly spent lik
 - `2%` Google Cloud Vision API
 - `38%` Tensorflow custom solutions and transfer learning
 
-I had to implement 5-6 different pipelines that will take my images and labels and convert it to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.
+I implemented 5-6 different pipelines that will take my images and labels and convert them to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.
 
 I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 400 images.
 
 ### Iterations with custom-trained object detection
 
-From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only.
+From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only. No setup, no config.
 
 (image)
 
@@ -188,7 +180,12 @@ This hit two problems:
 
 The rotation problem is amplified by the fact that the mobile phone doesn't know how to orientat the image of something that is on the floor.
 
-I decided to split the problem to two phases: detecting the display first, and then detecting the digits in the display. Each phase can be evaluated on its own, which is useful in loss analysis.
+I decided to split the problem to two phases:
+
+1) detecting the display in the big image,
+2) detecting the digits in the display.
+
+Each phase can be evaluated on its own, which is useful in loss analysis.
 
 #### Display detection
 
@@ -206,9 +203,11 @@ During the prediction I would show the input image to the model. The output is t
 
 (image, K-rotation output)
 
-This worked much better, but it still had some precission losses. The final slam dunk for display+rotation detection was the voting system during prediction. Because the training phase recieved `K` rotations of each image, now it became OK to present the model with `K` rotations of the input image during prediction time. Each of the `K` rotations would give some answer to where is the model and how it's rotated.
+This worked much better, but it still had some precission losses. The final slam dunk for display+rotation detection was the voting system during prediction. Because the training phase recieved `K` rotations of each image, now it became OK to present the model with `K` rotations of the input image during prediction time. Each of the `K` rotations would give some answer to where is the display and how it's rotated.
 
-If the model was perfect, all evaluations would show the same location and rotation hints would yield different value (`0`, `90`, `180`, `270`) for each rotation. Subtracting model's rotation hint from the image rotation that was used we give the final answer for the expected rotation. Implementing a voting scheme here gave surprisingly good results.
+If the model was perfect, all evaluations would show the same display location, and rotation hints would yield different value (`0`, `90`, `180`, `270`) for each rotation.
+
+The final answer is given by subtracting model's rotation hint from the image rotation given to the model. Implementing a voting scheme here gave surprisingly good results.
 
 (image, voting)
 
@@ -218,14 +217,15 @@ Note that the hyper-parameter `K` doesn't need to be `4`. If the model is perfec
 
 #### Digit detection
 
-Digit detection inputs an image and outputs rectangles labeled as digits: `digit_{0-9}`. I expected this to be simple for the AutoML Object Detection. Lol, no. Nothing is simple.
-
-I got many precision losses which I couldn't easily explain.
+Digit detection inputs an upright display image and outputs rectangles labeled as digits: `digit_{0-9}`.
 
 (image)
 
-Looking through the open sourced `object_detection` Tensorflow on GitHub, which I suspected AutoML was using, I found a parameter
-[aug_rand_flip](https://github.com/tensorflow/models/blob/master/official/vision/detection/dataloader/shapemask_parser.py#L131). Based on the docs, the parameter expands input training images with their horizontal flips. This parameter can't be configured in AutoML Object Detection, but if they set it to true it would surely screw up 7-segment digit object detection.
+I expected this to be simple for the AutoML Object Detection. Lol, no. Nothing is simple. I got many precision losses which I couldn't easily explain.
+
+(image)
+
+Looking through the open sourced `object_detection` Tensorflow on GitHub, which I suspected AutoML was using, I found a parameter [`aug_rand_flip`](https://github.com/tensorflow/models/blob/master/official/vision/detection/dataloader/shapemask_parser.py#L131). Based on the docs, the parameter expands input training images with their horizontal flips. This parameter can't be configured in AutoML Object Detection, but if they set it to true it would surely screw up 7-segment digit object detection.
 
 (image)
 
@@ -255,7 +255,7 @@ The detection latency is ~15 seconds, mostly because I optimized serving to be p
 
 ### The state of Object Detection support
 
-I am surprised by the simplicity and efficiency of Google Cloud AutoML Object Detection. When it comes to pricing, each account gets $300 free quota which is enough to train 5-10 model iterations. If you are lucky to get the result you need in that quota, everything else can be free - they give the ability for you to serve the trained model in Docker, TF.js or in mobile app.
+I am surprised by the simplicity and efficiency of Google Cloud AutoML Object Detection. When it comes to pricing, each account gets $300 free quota which is enough to train 5-10 model iterations. If you are lucky to get the result you need in that quota, everything else can be free - they give the ability to download the trained model as a Docker container, TF.js bundle or TF Lite bundle.
 
 Using this free quota I managed to train a succcessful weight scale measurement OCR system.
 
@@ -267,21 +267,21 @@ I broke this principle multiple times. First, I thought that SVHN trained models
 
 (image, difference between svhn and digits)
 
-During display orinentation detection, I broke this principle again - I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - the score was rubbish, sometimes high sometimes low.
+During display orinentation detection, I broke this principle again - I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - it was rubbish, sometimes high sometimes low.
 
-When it comes to data collection phase, I think I got this principle right. To collect the training dataset I built the application in its final form, with a fake model (myself as human labeler). Once the model was ready, I justed swapped out the human.
+When it comes to data collection phase, I think I got it right, at least from this principle's perspective. To collect the training dataset I built the application in its final form, with a fake model (myself as human labeler). Once the model was ready, I justed swapped out the human.
 
 **Be evaluation driven.**
 
-Early in the project when I was evaluating related work, I would try to run the existing model and then feed it with an image or two to see how it works. Only when I started my own quality iterations I built a pipeline that runs the model on all train/test/val images and reports the metrics.
+Early in the project when I was evaluating the related work, I would try to run the existing model and then feed it with an image or two to see how it works. Only when I started my own quality iterations I built a pipeline that runs the model on all train/test/val images and reports the metrics.
 
 It would be better if I defined a container interface early on that listens to the image request on HTTP and gives a standardised JSON output. Then I would have a Docker image for every related work I managed to successfully run, persisted together with evaluation results. Having not done so, I only have weak (empirical) evidence that the related work models didn't work on my problem space.
 
-When it comes to running things from other research-y works, the dependencies pose a big chalelnge. Docker solved this problem completely, and I am looking forward to seeing Docker adoption in academia.
+When it comes to running things from other research-y works, the dependencies pose a big chalelnge. Docker solves this problem completely, and I am looking forward to seeing Docker adoption in academia.
 
 **Be loss analysis driven.**
 
-During loss analysis, it would happen to me that after I've seen 2 similar failures I would rush into implementing a hotfix for that specific pattern. This hotfix would always get reverted. Implementing hotfixes for specific losses (instead of biggest loss patterns) only increases the model complexity and, in my experience, it doesn't reflect to wins in validation set metric. The lesson learned here is to be patient, finish analyzing all losses that you prepared and then decide on the next step. Implement the next steps the day after.
+During loss analysis, it would happen to me that after I've seen 2 similar failures I would rush into implementing a hotfix for that specific pattern. This hotfix would always get reverted later on. Implementing hotfixes for specific losses (instead of biggest loss patterns) only increases the model complexity and, in my experience, it doesn't reflect to wins in validation set metric. The lesson learned here is to be patient, finish analyzing all losses that you prepared and then decide on the next step.
 
 ### Parting words
 
@@ -289,12 +289,12 @@ On Monday, 2020-10-28 I was in a room in downtown Manhattan packed with excited 
 
 > You've gotta use ML! If you don't, chances are that your competitors will.
 
-I hated it. I was full with disagreement. On the other hand, in the audience I saw ripples of head-nodding folks getting high on agreement with the speaker.
+I hated it. On the other hand, in the audience I saw ripples of head-nodding folks getting high on agreement with the speaker.
 
 I decided to embrace a different engineering principle - "Don't go AI first - always stay user first". ML is a tool, not a goal.
 
 Even The Doors knew this when they played The Roadhouse Blues. They say:
 
-> Yeah, keep your eyes on the road, your hand upon the wheel.
+> Yeah, keep your eyes on the road, your hands upon the wheel.
 
-For **road**, they probably meant **user goal** and for **whell** they meant **the tools** - whatever tools are needed - a for-loop, a compiler, a database or an ML model.
+For **the road**, they probably meant **user goal** and for **the wheel** they meant **the tools** - whatever tools are needed - a for-loop, a compiler, a database or an ML model.
