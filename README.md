@@ -26,11 +26,9 @@ Less likely, if you are using [the photo weigh-in application](https://snapscale
 
 ### Why
 
-The goal of SnapScale is to instill a periodic weigh-in habbit in humans.
+The goal of SnapScale is to instill a weigh-in habit in humans.
 
-A periodic - for example, daily - body weight measurement is already a good diet on its own.
-
-We didn't define a goal to help people lose weight, instead our goal is to help people be more aware. The awareness goal is a smaller, prerequisite goal for the greater goal - human health.
+We didn't define a goal to help people lose weight, instead our goal is to help people be more aware. The awareness goal is a smaller, prerequisite goal for the bigger goal of actual taking actions if health is threatened.
 
 Taking a weight measurement has amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.
 
@@ -136,32 +134,31 @@ Classical computer vision techniques on GitHub:
 
 Classical computer vision techniques articles:
 
-* [http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf](http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf)
-* [https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b)](https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b))
-* [https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37](https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37)
-* [https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea](https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea)
-* [https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/](https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/)
-* [https://www.programcreek.com/python/example/89294/cv2.watershed](https://www.programcreek.com/python/example/89294/cv2.watershed)
-* [https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/](https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/)
-* [https://www.sciencedirect.com/science/article/pii/S235248471930174X](https://www.sciencedirect.com/science/article/pii/S235248471930174X)
+* [Reading LCD/LED Displays with a Camera Cell Phone](http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf)
+* [Building a Gas Pump Scanner with OpenCV/Python/iOS](https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b))
+* [Build a Multi Digit Detector with Keras and OpenCV](https://towardsdatascience.com/build-a-multi-digit-detector-with-keras-and-opencv-b97e3cd3b37)
+* [Scanned Numbers Recognition using k-Nearest Neighbor (k-NN)](https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea)
+* [Dumb thermometer gets digital output](https://www.kurokesu.com/main/2017/02/20/dumb-thermometer-gets-digital-output/)
+* [Recognizing digits with OpenCV and Python](https://www.pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/)
+* [Text detection and recognition in raw image dataset of seven segment digital energy meter display](https://www.sciencedirect.com/science/article/pii/S235248471930174X)
 
 Street View House Number Dataset related solutions:
 
-* [https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504](https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504)
-* [https://arxiv.org/pdf/1312.6082.pdf](https://arxiv.org/pdf/1312.6082.pdf)
-* [http://ufldl.stanford.edu/housenumbers/](http://ufldl.stanford.edu/housenumbers/)
-* [https://github.com/potterhsu/SVHNClassifier](https://github.com/potterhsu/SVHNClassifier)
-* [https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md](https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md)
+* [Getting Started with ‘Street View House Numbers’ (SVHN) Dataset](https://medium.com/project-agi/getting-started-with-street-view-house-numbers-svhn-dataset-a96e76962504)
+* [Multi-digit Number Recognition from Street View Imagery using Deep Convolutional Neural Networks](https://arxiv.org/pdf/1312.6082.pdf)
+* [The Street View House Numbers (SVHN) Dataset](http://ufldl.stanford.edu/housenumbers/)
+* [github.com/potterhsu/SVHNClassifier](https://github.com/potterhsu/SVHNClassifier)
+* [A SVHN-related project report](https://github.com/znat/udacity-digit-recognition-program-svhn/blob/master/project-report/project-report.md)
 
 Open Source Tensorflow Object Detection pipeline:
 
-* [https://github.com/tensorflow/models/tree/master/research/object_detection](https://github.com/tensorflow/models/tree/master/research/object_detection)
+* [github.com/tensorflow/models research/object_detection](https://github.com/tensorflow/models/tree/master/research/object_detection)
 
 Documentation about Google Cloud object detection solutions as service:
 
-* [https://cloud.google.com/vision](https://cloud.google.com/vision)
-* [https://cloud.google.com/vision/automl/object-detection/docs](https://cloud.google.com/vision/automl/object-detection/docs)
-* [https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start](https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start)
+* [Google Cloud Vision API](https://cloud.google.com/vision)
+* [Google Cloud AutoML Vision Object Detection](https://cloud.google.com/vision/automl/object-detection/docs)
+* [Google Cloud AI Platform built-in Object Detection](https://cloud.google.com/ai-platform/training/docs/algorithms/object-detection-start)
 
 My time in investigating and trying out existing solutions was roughly spent like this:
 
