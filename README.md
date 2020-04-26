@@ -41,7 +41,7 @@ SnapScale is a simple application that has 3 screens:
 - settings screen that optionally sets up FitBit export and no-weigh-in reminders
 
 <p align="center">
-  <img src="image1.png" width="400" alt="SnapScale application home screen" border="1px">
+  <img src="image1.jpg" width="400" alt="SnapScale application home screen" border="1px">
 </p>
 
 Tapping the weigh-in button launches the camera.
@@ -97,13 +97,13 @@ The natural next step is to move the model execution to the client, which will r
 When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labelling UI. The Labelling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share `y` coordinates, and all have the same dimensions. This is possible because prior to labelling the digits, the labeler rotates the image in such way that the display is upright.
 
 <p align="center">
-  <img src="image2.png" alt="SnapScale Labelling UI screenshot" border="1px">
+  <img src="image2.jpg" alt="SnapScale Labelling UI screenshot" border="1px">
 </p>
 
 Note that I made an assumption that the digits are always monospace. Well :) Assumption turns out to be the mother of all fuckups.
 
 <p align="center">
-  <img src="image3.png" alt="Non-monospace display digit" border="1px">
+  <img src="image3.jpg" alt="Non-monospace display digit" border="1px">
 </p>
 
 I manually labeled ~450 images so far. Each image has 3-4 digits, each digit is two mouse clicks. The Labelling UI is implemented in HTML5, mainly using Canvas API in JavaScript. The image transformation logic heavily uses affine transformation matrices - [DOMMatrix](https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix).
@@ -198,7 +198,7 @@ Each phase can be evaluated on its own, which is useful in loss analysis.
 My first attempt was predicting a single rectangle of a single class `display` on the input image. The training set was consisting of upright rotated images labeled with a single rectangle around the display. The AutoML Object Detection learned this with very good precision. At prediction time I would rotate the image 4 times and find the maximum confidence score for the display detection. I assumed that the maximum confidence would be achieved when the display is in upright rotation, just as it was in the training set.
 
 <p align="center">
-  <img src="image4.png" alt="SnapScale application home screen" border="1px">
+  <img src="image4.jpg" alt="SnapScale application home screen" border="1px">
 </p>
 
 The green detection box represents the input that was expected by the model, and the score is high. The red detection boxes have scores that have no guarantees.
