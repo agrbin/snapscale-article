@@ -47,7 +47,7 @@ SnapScale is a simple application that has 3 screens:
 
 We intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.
 
-## Implementation details worth sharing
+## App implementation details worth sharing
 
 ### AI Last
 
@@ -116,11 +116,11 @@ Having only good images in the dataset, to evaluate the algorithm I defined the 
 
 If an image that shows `78.2` gets recognized as `78.3`, the accuracy is not satifsfied.
 
-### Digit recognition
+## Image recognition implementation details
 
 In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day and I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy. I didn't expect that I'll be trainig new models.
 
-#### Related work
+### Related work
 
 Classical computer vision techniques on GitHub:
 
@@ -171,7 +171,7 @@ I had to implement 5-6 different pipelines that will take my images and labels a
 
 I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 400 images.
 
-#### Iterations with custom-trained object detection
+### Iterations with custom-trained object detection
 
 From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only.
 
@@ -241,11 +241,11 @@ I submitted a training job to AI Platform (after building yet another pipeline t
 
 On Monday, 2020-10-28 I was in a room in downtown Manhattan packed with excited engineers and PMs who were ready to take over the world. This was AWS Data Lake Day in AWS Loft. I clearly remember a specific sentence - the speaker said confidently:
 
-> You've gotta use ML! If you don't chances are that your competitors will.
+> You've gotta use ML! If you don't, chances are that your competitors will.
 
 I hated it. I was full with disagreement. On the other hand, in the audience, I saw ripples of tough-looking head-nodding experts getting high on agreement with the speaker.
 
-That is when I decided to embrace a new personal engineering principle - "Don't go AI first - always stay user first."
+I decided to embrace a different engineering principle - "Don't go AI first - always stay user first."
 
 ML is nothing but a tool.
 

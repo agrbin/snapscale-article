@@ -17,14 +17,14 @@
 <li><a href="#case-study-a-weigh-in-habit-app-snapscale">Case study: a weigh-in habit app, SnapScale</a><ul>
 <li><a href="#why">Why</a></li>
 <li><a href="#how">How</a></li></ul></li>
-<li><a href="#implementation-details-worth-sharing">Implementation details worth sharing</a><ul>
+<li><a href="#app-implementation-details-worth-sharing">App implementation details worth sharing</a><ul>
 <li><a href="#ai-last">AI Last</a></li>
 <li><a href="#the-app">The app</a></li>
 <li><a href="#backend">Backend</a></li>
-<li><a href="#labeling-ui">Labeling UI</a></li>
-<li><a href="#digit-recognition">Digit recognition</a><ul>
+<li><a href="#labeling-ui">Labeling UI</a></li></ul></li>
+<li><a href="#image-recognition-implementation-details">Image recognition implementation details</a><ul>
 <li><a href="#related-work">Related work</a></li>
-<li><a href="#iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</a></li>
+<li><a href="#iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</a><ul>
 <li><a href="#display-detection">Display detection</a></li>
 <li><a href="#digit-detection">Digit detection</a></li></ul></li></ul></li>
 <li><a href="#conclusion">Conclusion</a><ul>
@@ -66,7 +66,7 @@
 <li>settings screen that optionally sets up FitBit export and no-weigh-in reminders</li>
 </ul>
 <p>We intentionally reduced all clutter that could waste user's time from the app. There is no login to start using the app - login is required later only if you want to export data to FitBit.</p>
-<h2 id="implementation-details-worth-sharing">Implementation details worth sharing</h2>
+<h2 id="app-implementation-details-worth-sharing">App implementation details worth sharing</h2>
 <h3 id="ai-last">AI Last</h3>
 <p>Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. But, before diving into that part - I defined and implemented everything else first:</p>
 <ul>
@@ -111,9 +111,9 @@ instance_class: F1
 <li><strong>accuracy</strong>: percentage of images in which all digits are correctly identified</li>
 </ul>
 <p>If an image that shows <code>78.2</code> gets recognized as <code>78.3</code>, the accuracy is not satifsfied.</p>
-<h3 id="digit-recognition">Digit recognition</h3>
+<h2 id="image-recognition-implementation-details">Image recognition implementation details</h2>
 <p>In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day and I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy. I didn't expect that I'll be trainig new models.</p>
-<h4 id="related-work">Related work</h4>
+<h3 id="related-work">Related work</h3>
 <p>Classical computer vision techniques on GitHub:</p>
 <ul>
 <li><a href="https://github.com/jacnel/wetr">github.com/jacnel/wetr</a></li>
@@ -161,7 +161,7 @@ instance_class: F1
 </ul>
 <p>I had to implement 5-6 different pipelines that will take my images and labels and convert it to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.</p>
 <p>I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 400 images.</p>
-<h4 id="iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</h4>
+<h3 id="iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</h3>
 <p>From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only.</p>
 <p>(image)</p>
 <p>Naive as I am, I started by training a model that solves everything at once. The input is the raw user image, and the output are labeled digit rectangles.</p>
@@ -198,10 +198,10 @@ instance_class: F1
 <h3 id="parting-words">Parting words</h3>
 <p>On Monday, 2020-10-28 I was in a room in downtown Manhattan packed with excited engineers and PMs who were ready to take over the world. This was AWS Data Lake Day in AWS Loft. I clearly remember a specific sentence - the speaker said confidently:</p>
 <blockquote>
-  <p>You've gotta use ML! If you don't chances are that your competitors will.</p>
+  <p>You've gotta use ML! If you don't, chances are that your competitors will.</p>
 </blockquote>
 <p>I hated it. I was full with disagreement. On the other hand, in the audience, I saw ripples of tough-looking head-nodding experts getting high on agreement with the speaker.</p>
-<p>That is when I decided to embrace a new personal engineering principle - "Don't go AI first - always stay user first."</p>
+<p>I decided to embrace a different engineering principle - "Don't go AI first - always stay user first."</p>
 <p>ML is nothing but a tool.</p>
 <p>Even The Doors knew this when they played The Roadhouse Blues. They say "Yeah, keep your eyes on the <strong>road</strong>, your hand upon the <strong>wheel</strong>.".  For <strong>road</strong>, they probably meant <strong>user goal</strong> and for the <strong>whell</strong> they meant <strong>the tools</strong> - whatever tools are needed - a for-loop, a compiler, a database or an ML model.</p>
 <p>By the way this song is full of good engineering analogies!</p>
