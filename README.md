@@ -203,7 +203,6 @@ To fix this, I made the problem harder for the model. I expanded each image in t
   <img src="image5.jpg" alt="Display detection with multiple rotations" border="1px">
 </p>
 
-
 During the prediction I would show the input image to the model. The output is the display location and how much it was rotated from the upward position.
 
 This worked much better, but it still had some precission losses. The final slam dunk for display+rotation detection was the voting system during prediction. Because the training phase recieved `K` rotations of each image, now it became OK to present the model with `K` rotations of the input image during prediction time. Each of the `K` rotations would give some answer to where is the display and how it's rotated.
@@ -214,21 +213,26 @@ The final answer is given by subtracting model's rotation hint from the image ro
 
 Note that the hyper-parameter `K` doesn't need to be `4`. If the model is perfect, the maximum angle distance of the hinted rotation and the correct rotation is `(360 / K) / 2`. If `K` is bigger, the display detection problem is more difficult. On the other hand, the outputs are closer to being upright rotated, which makes the digit detection problem less difficult.
 
-(image, comparison between two K values)
-
 #### Digit detection
 
 Digit detection inputs an upright display image and outputs rectangles labeled as digits: `digit_{0-9}`.
 
-(image)
+<p align="center">
+  <img src="image6.jpg" alt="Digit detection problem" border="1px">
+</p>
 
 I expected this to be simple for the AutoML Object Detection. Lol, no. Nothing is simple. I got many precision losses which I couldn't easily explain.
 
-(image)
+<p align="center">
+  <img src="image7.jpg" alt="2-5 confusion in digit detection" border="1px">
+</p>
+
 
 Looking through the open sourced `object_detection` Tensorflow on GitHub, which I suspected AutoML was using, I found a parameter [`aug_rand_flip`](https://github.com/tensorflow/models/blob/master/official/vision/detection/dataloader/shapemask_parser.py#L131). Based on the docs, the parameter expands input training images with their horizontal flips. This parameter can't be configured in AutoML Object Detection, but if they set it to true it would surely screw up 7-segment digit object detection.
 
-(image)
+<p align="center">
+  <img src="image8.jpg" alt="Flip horizontaly loses information about the 7-segment digits" border="1px">
+</p>
 
 Google Cloud support answered my question on [cloud-vision-discuss thread](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/cloud-vision-discuss/6mrbUdWcVys/Tv4nXRy8BAAJ), which helped me understand that AI Platform Object Detection and AutoML Object Detection are quite different.
 

@@ -186,14 +186,19 @@ instance_class: F1
 <p>If the model was perfect, all evaluations would show the same display location, and rotation hints would yield different value (<code>0</code>, <code>90</code>, <code>180</code>, <code>270</code>) for each rotation.</p>
 <p>The final answer is given by subtracting model's rotation hint from the image rotation given to the model. Implementing a voting scheme here gave surprisingly good results.</p>
 <p>Note that the hyper-parameter <code>K</code> doesn't need to be <code>4</code>. If the model is perfect, the maximum angle distance of the hinted rotation and the correct rotation is <code>(360 / K) / 2</code>. If <code>K</code> is bigger, the display detection problem is more difficult. On the other hand, the outputs are closer to being upright rotated, which makes the digit detection problem less difficult.</p>
-<p>(image, comparison between two K values)</p>
 <h4 id="digit-detection">Digit detection</h4>
 <p>Digit detection inputs an upright display image and outputs rectangles labeled as digits: <code>digit_{0-9}</code>.</p>
-<p>(image)</p>
+<p align="center">
+  <img src="image6.jpg" alt="Digit detection problem" border="1px">
+</p>
 <p>I expected this to be simple for the AutoML Object Detection. Lol, no. Nothing is simple. I got many precision losses which I couldn't easily explain.</p>
-<p>(image)</p>
+<p align="center">
+  <img src="image7.jpg" alt="2-5 confusion in digit detection" border="1px">
+</p>
 <p>Looking through the open sourced <code>object_detection</code> Tensorflow on GitHub, which I suspected AutoML was using, I found a parameter <a href="https://github.com/tensorflow/models/blob/master/official/vision/detection/dataloader/shapemask_parser.py#L131"><code>aug_rand_flip</code></a>. Based on the docs, the parameter expands input training images with their horizontal flips. This parameter can't be configured in AutoML Object Detection, but if they set it to true it would surely screw up 7-segment digit object detection.</p>
-<p>(image)</p>
+<p align="center">
+  <img src="image8.jpg" alt="Flip horizontaly loses information about the 7-segment digits" border="1px">
+</p>
 <p>Google Cloud support answered my question on <a href="https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/cloud-vision-discuss/6mrbUdWcVys/Tv4nXRy8BAAJ">cloud-vision-discuss thread</a>, which helped me understand that AI Platform Object Detection and AutoML Object Detection are quite different.</p>
 <p>I submitted a training job to AI Platform (after building yet another pipeline to transform my data), and got excellent results. This was another surprise, because my training set was less than 400 images, and the AI Platform Object Detection trains from scratch - it doesn't do transfer learning.</p>
 <h3 id="results">Results</h3>
