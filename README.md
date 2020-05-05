@@ -270,8 +270,6 @@ Using this free quota I managed to train a succcessful weight scale measurement 
 
 I broke this principle multiple times. First, I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. Lol, no. The transfer learning from SVHN model to my problem space also didn't end up working.
 
-(image, difference between svhn and digits)
-
 During display orinentation detection, I broke this principle again - I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - it was rubbish, sometimes high sometimes low.
 
 When it comes to data collection phase, I think I got it right, at least from this principle's perspective. To collect the training dataset I built the application in its final form, with a fake model (myself as human labeler). Once the model was ready, I justed swapped out the human.
