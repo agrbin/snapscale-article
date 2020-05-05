@@ -1,10 +1,10 @@
 ## Introduction 
 
-I started drilling on SnapScale in mid-2018 with a goal of **creating a weigh-in habit** for a friend of mine. The idea is to convert an old school scale into a smart one **using phone's camera**. User scans the weight measurement with a phone camera and the app recognizes the value, logs it, and optionally exports to user's FitBit profile.
+I started drilling on SnapScale in mid-2018 with a goal of **creating a weigh-in habit** for a friend of mine. I converted their old school scale into a smart one **using phone's camera**. The user scans the weight measurement with a phone and the app recognizes the value, logs it, and optionally exports to FitBit profile.
 
 Feel free to try it out - no log-in or account creation is required - [SnapScale - build a weight-in habit](https://snapscale.life).
 
-This report gives a timeline of an end to end project heavly relying on ML.
+This report gives a timeline of a complete product heavly relying on ML tools.
 
 ### The goal of this report
 
@@ -20,21 +20,15 @@ Software Engineers, Data Scientists, Product Managers and other Rock and Roll pe
 
 Less likely, if you are using [the photo weigh-in application](https://snapscale.life), here you can learn how the AI behind it works.
 
-## Case study: a weigh-in habit app, SnapScale 
+## App implementation
 
-### Why
+### User-facing product
 
-The goal of SnapScale is to instill a weigh-in habit in humans.
+The goal of SnapScale is to instill a weigh-in habit in humans. Taking a weight measurement has amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.
 
-Taking a weight measurement has amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.
+The app lets you log the weight measurement by taking a photo of scale's display while you're standing on the scale. User doesn't need to lean down - a photo taken from the normal hand height works. The AI model reads out the digits and logs the weight.
 
-### How
-
-Smart scales like FitBit Aria are a great way achieve this. With [SnapScale](https://snapscale.life) we are giving the same product to people that don't own a smart scale.
-
-SnapScale lets you log the weight measurement by taking a photo of scale's display while you're standing on the scale. User doesn't need to lean down - a photo taken from the normal hand height works. The AI model reads out the digits and logs the weight.
-
-SnapScale is a simple application that has 3 screens:
+There are 3 screens in the app:
 
 - submit a new weight-in measurement that launches a camera
 - view your previous measurements
@@ -48,14 +42,12 @@ Tapping the weigh-in button launches the camera.
 
 We intentionally reduced clutter that could waste user's time in the app. There is no login required or account creating to start using the app. Optionally if user wants to export their data to FitBit, the login with FitBit is required.
 
-## App implementation
-
 ### AI Last
 
-Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. But, in this project I tried adopting the "AI Last" principle. Before diving into OCR implementation details I first:
+Engineering-wise, the central and most "sexy" part of the application is the component that reads the weight measurement from the image. I delayed tackling that part of the problem. Instead, I tried adopting the "AI Last" principle. That meant first doing the following:
 
 - Built a mobile app for photo-based weight-logging, reminders, and export to FitBit.
-- Launched th with a fake backend - each image would trigger a notification on my phone for me to read the numbers instead of the ML model
+- Launched with a fake backend - each image would trigger a notification on my phone for me to read the numbers instead of the ML model
 - Implemented the UI for reading the numbers from images and labelling them
 - Implemented the evaluation framework for image recognition problem
 
@@ -68,7 +60,7 @@ By the time I started iterating on the model, I labeled ~450 images and had a go
 
 One risk of this approach is betting everything on the fact that the last step (AI) will work. It could've happened that OCR at the end would be too difficult to implement, and the project would "fail slow".
 
-### The app
+### Mobile app framework
 
 The application is built using [Expo](https://expo.io) framework which is a wrapper around [React Native](https://reactnative.dev/).  It's suitable for fast prototyping which is exactly what I needed. Same codebase is executed on both platforms. If Expo would have a book it would be called "App development for dummies".
 
@@ -76,7 +68,7 @@ The application is built using [Expo](https://expo.io) framework which is a wrap
 
 Backend is used to store weight logs and images. The clients don't do any authentication, but there is a lightweight handshake step.
 
-On app install, user agrees to terms of use by signing with a captcha. The successful captcha challenge gives a permanent session token to the application that is later required to communicate with the backend. I find this trick useful when designing an application + backend storage without requiring a login.
+On app install, user agrees to Terms of Use using captcha as a signature. The successful captcha challenge gives a permanent session token to the application that is later required to communicate with the backend. I find this trick useful when designing an application + backend storage without requiring a login.
 
 Although login sounds like a good alternative, I suspect it would repel some users due to sensitivity of the images that are being sent. This way we keep user images stripped of any other kind of PII.
 
@@ -94,7 +86,7 @@ The natural next step is to move the model execution to the client, which will r
 
 ### Labelling UI
 
-When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an IFTTT notification would hit my phone with the link to the Labelling UI. The Labelling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share `y` coordinates, and all have the same dimensions. This is possible because prior to labelling the digits, the labeler rotates the image in such way that the display is upright.
+When a new image is submitted to the system, and the model is not cofident about the results (or when the model was not even there yet) an [IFTTT](https://ifttt.com) notification would hit my phone with the link to the Labelling UI. The Labelling UI would show the image, let me translate and rotate it, and label the digits. The digits are labeled with rectangles that all share `y` coordinates, and all have the same dimensions. This is possible because prior to labelling the digits, the labeler rotates the image in such way that the display is upright.
 
 <p align="center">
   <img src="image2.jpg" alt="SnapScale Labelling UI screenshot" border="1px">
@@ -118,11 +110,11 @@ If an image that shows `78.2` gets recognized as `78.3`, the accuracy is not sat
 
 ## Image recognition
 
-In this moment, ~2 months in the project I had an application that works, with 1-2 requests per day all labeled manually. I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy.
+I started working on Image recognition ~2 months in the project. At that time, I had an application that works, with 1-2 OCR requests per day all labeled manually. I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy.
 
 ### Existing work
 
-I found a bunch of existing related models that would in theory solve our problem, but reproducibility was very low.
+I found a bunch of existing related models that would in theory solve our problem. Reproducibility of those project was low.
 
 Classical computer vision techniques on GitHub:
 
@@ -169,27 +161,27 @@ My time in investigating and trying out existing solutions was roughly spent lik
 - `2%` Google Cloud Vision API
 - `38%` Tensorflow custom solutions and transfer learning
 
-I implemented 5-6 different pipelines that will take my images and labels and convert them to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.
+I implemented 5-6 different pipelines that will take SnapScale images and labels and convert them to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.
 
-I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 400 images.
+I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 450 images available.
 
 ### Iterations with custom-trained object detection
 
-From their documentation, Google Cloud AutoML Vision Object Detection looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only. No setup, no config.
+From their documentation, [Google Cloud AutoML Vision Object Detection](https://cloud.google.com/vision/automl/object-detection/docs) looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only. No setup, no config.
 
-Naive as I am, I started by training a model that solves everything at once. The input is the raw user image, and the output are labeled digit rectangles.
+Naive as I am, I started by training a model that solves everything at once: read digits from raw user image. The input is the raw user image, and the output are labeled digit rectangles.
 
 This hit two problems:
 
-1) the 7-segment digits sometimes change meaning with rotation (think 2 and 5)
-1) the digit was sometimes too small on the original image for the model to pick up
+* the 7-segment digits sometimes change meaning with rotation (think 2 and 5)
+* the digit was sometimes too small on the original image for the model to pick up
 
 The rotation problem is amplified by the fact that the mobile phone doesn't know how to orientat the image of something that is on the floor.
 
 I decided to split the problem to two phases:
 
-1) detecting the display in the big image,
-2) detecting the digits in the display.
+* detecting the display in the big image,
+* detecting the digits in the display.
 
 Each phase can be evaluated on its own, which is useful in loss analysis.
 
@@ -197,29 +189,28 @@ Each phase can be evaluated on its own, which is useful in loss analysis.
 
 My first attempt was predicting a single rectangle of a single class `display` on the input image. The training set was consisting of upright rotated images labeled with a single rectangle around the display. The AutoML Object Detection learned this with very good precision. At prediction time I would rotate the image 4 times and find the maximum confidence score for the display detection. I assumed that the maximum confidence would be achieved when the display is in upright rotation, just as it was in the training set.
 
+Lol, no. I violated the property that training input distribution needs be aligned with the runtime input distribution. The model training saw only correctly rotated images, so the confidences that I was getting for the incorretly rotated images were rubbish - sometimes 0, sometimes 1.
+
 <p align="center">
-  <img src="image4.jpg" alt="SnapScale application home screen" border="1px">
+  <img src="image4.jpg" alt="Display detection" border="1px">
 </p>
 
-The green detection box represents the input that was expected by the model, and the score is high. The red detection boxes have scores that have no guarantees.
-
-Lol, no. I violated the property that training input distribution needs be aligned with the runtime input distribution. The model training saw only correctly rotated images, so the confidences that I was getting for the incorretly rotated images were rubbish - sometimes 0, sometimes 1.
+The green detection box represents the input that was expected by the model, and the scores there are precise. The red detection boxes have scores that have no guarantees.
 
 To fix this, I made the problem harder for the model. I expanded each image in the input to `K=4` new images with different rotations. Rotations are done in `360 / K = 90` increments, starting from the upright image. The display label on the upright image became `display_rotated_0_degrees`. On the next image it became `display_rotated_90_degrees`, then `display_rotated_180_degrees` and `display_rotated_270_degrees`. So the number of input images and output classes grew `K` times.
 
-(image5, K-rotation input)
+<p align="center">
+  <img src="image5.jpg" alt="Display detection with multiple rotations" border="1px">
+</p>
+
 
 During the prediction I would show the input image to the model. The output is the display location and how much it was rotated from the upward position.
-
-(image6, K-rotation output)
 
 This worked much better, but it still had some precission losses. The final slam dunk for display+rotation detection was the voting system during prediction. Because the training phase recieved `K` rotations of each image, now it became OK to present the model with `K` rotations of the input image during prediction time. Each of the `K` rotations would give some answer to where is the display and how it's rotated.
 
 If the model was perfect, all evaluations would show the same display location, and rotation hints would yield different value (`0`, `90`, `180`, `270`) for each rotation.
 
 The final answer is given by subtracting model's rotation hint from the image rotation given to the model. Implementing a voting scheme here gave surprisingly good results.
-
-(image, voting)
 
 Note that the hyper-parameter `K` doesn't need to be `4`. If the model is perfect, the maximum angle distance of the hinted rotation and the correct rotation is `(360 / K) / 2`. If `K` is bigger, the display detection problem is more difficult. On the other hand, the outputs are closer to being upright rotated, which makes the digit detection problem less difficult.
 
