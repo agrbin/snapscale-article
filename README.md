@@ -236,7 +236,7 @@ I expected this to be simple for the AutoML Object Detection. Wrong again! Nothi
 </p>
 
 
-Looking through the open sourced `object_detection` Tensorflow on GitHub, which I suspected AutoML was using, I found a parameter [`aug_rand_flip`](https://github.com/tensorflow/models/blob/master/official/vision/detection/dataloader/shapemask_parser.py#L131). Based on the docs, the parameter expands input training images with their horizontal flips. This parameter can't be configured in AutoML Object Detection, but if they set it to true it would surely screw up 7-segment digit object detection.
+Looking through the open sourced Object Detection Tensorflow implementation on GitHub, I found a parameter [`aug_rand_flip`](https://github.com/tensorflow/models/blob/master/official/vision/detection/dataloader/shapemask_parser.py#L131). Based on the docs, the parameter expands input training images with their horizontal flips. This parameter can't be configured in AutoML Object Detection, but if they set it to true it would surely screw up 7-segment digit object detection.
 
 <p align="center">
   <img src="image8.jpg" alt="Flip horizontaly loses information about the 7-segment digits" border="1px">
