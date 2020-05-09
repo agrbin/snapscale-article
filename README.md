@@ -2,17 +2,23 @@
 
 I am writing this report to share my thoughts about:
 
-- ML principles for real-world applications
+* ML principles for real-world applications
 
 In this article, I explain that unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in real world projects come last. Also, expect that ML engineering will be dominated by data transform and evaluation framework.
 
-- The state of ML tools today available on Google Cloud
+* The state of ML tools today available on Google Cloud
 
 If the above sounds pessimistic to you, and you really wanted to show-off your ML skills on a real-world project coming up in your company, I have more bad news. All the cool things were already implemented by the cloud services, and they are giving it almost for free. Again, your time will be spent on massaging the data. The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well! Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them!
 
-- Rotation-invariant algorithm to detect a display on the image and read the weight value written on it
+* Rotation-invariant algorithm to detect a display on the image and read the weight value written on it
 
 The related work with display OCR that I analyzed didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem.
+
+### Targeted audience
+
+* Software Engineers, Data Scientists, Product Managers and other Rock and Roll people.
+
+* Less likely, if you are using [the photo weigh-in application](https://snapscale.life), here you can learn how the AI behind it works.
 
 ## Introduction 
 
@@ -21,12 +27,6 @@ I started drilling on SnapScale in mid-2018 with a goal of **creating a weigh-in
 Feel free to try it out - no log-in or account creation is required - [SnapScale - build a weight-in habit](https://snapscale.life).
 
 This report gives a timeline of a complete product heavily relying on ML tools.
-
-### Targeted audience
-
-Software Engineers, Data Scientists, Product Managers and other Rock and Roll people.
-
-Less likely, if you are using [the photo weigh-in application](https://snapscale.life), here you can learn how the AI behind it works.
 
 ## App implementation
 
