@@ -1,6 +1,6 @@
-## The goal of this report
+## The goal
 
-I am writing this report to share my thoughts about:
+I am writing this post to share my thoughts about:
 
 * ML principles for real-world applications
 
