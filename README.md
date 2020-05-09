@@ -189,7 +189,7 @@ Each phase can be evaluated on its own, which is useful in loss analysis.
 
 My first attempt was predicting a single rectangle of a single class `display` on the input image. The training set was consisting of upright rotated images labeled with a single rectangle around the display. The AutoML Object Detection learned this with very good precision. At prediction time I would rotate the image 4 times and find the maximum confidence score for the display detection. I assumed that the maximum confidence would be achieved when the display is in upright rotation, just as it was in the training set.
 
-Lol, no. I violated the property that training input distribution needs be aligned with the runtime input distribution. The model training saw only correctly rotated images, so the confidences that I was getting for the incorrectly rotated images were rubbish - sometimes 0, sometimes 1.
+I was wrong. I violated the property that training input distribution needs be aligned with the runtime input distribution. The model training saw only correctly rotated images, so the confidences that I was getting for the incorrectly rotated images were rubbish - sometimes 0, sometimes 1.
 
 <p align="center">
   <img src="image4.jpg" alt="Display detection" border="1px">
@@ -221,7 +221,7 @@ Digit detection inputs an upright display image and outputs rectangles labeled a
   <img src="image6.jpg" alt="Digit detection problem" border="1px">
 </p>
 
-I expected this to be simple for the AutoML Object Detection. Lol, no. Nothing is simple. I got many precision losses which I couldn't easily explain.
+I expected this to be simple for the AutoML Object Detection. Wrong again! Nothing is simple. I got many precision losses which I couldn't easily explain.
 
 <p align="center">
   <img src="image7.jpg" alt="2-5 confusion in digit detection" border="1px">
@@ -288,7 +288,7 @@ During loss analysis, it would happen to me that after I've seen 2 similar failu
 
 ### Parting words
 
-On Monday, 2020-10-28 I was in a room in downtown Manhattan packed with excited engineers and PMs who were ready to take over the world. This was AWS Data Lake Day in AWS Loft. I clearly remember a specific sentence - the speaker said confidently:
+On Monday, 2019-10-28 I was in a room in downtown Manhattan packed with excited engineers and PMs who were ready to take over the world. This was AWS Data Lake Day in AWS Loft. I clearly remember a specific sentence - the speaker said confidently:
 
 > You've gotta use ML! If you don't, chances are that your competitors will.
 
