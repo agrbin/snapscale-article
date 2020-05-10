@@ -195,7 +195,7 @@ My confidence further deflated when I figured that many of the images in the set
   <img src="bad.jpg" alt="Contour detection problems" border="1px">
 </p>
 
-As negative examples were not a minority of my training set, I ultimately gave up on OpenCV and started looking into ML models. My next step was to use SVHN, but I'll skip the details there.. Long story short is that SVHN numbers are very different from display numbers. Finally, I decided to train a custom model using the training set I collected.
+As negative examples were not a minority of my training set, I ultimately gave up on OpenCV and started looking into ML models. My next step was to use SVHN (Street View House Numbers) dataset, but I'll skip the details there.. Long story short is that SVHN numbers are very different from the display numbers. Finally, I decided to train a custom model using the training set I collected.
 
 Spoiler alert - all images from above examples were correctly classified with Tensorflow Object Detection.
 

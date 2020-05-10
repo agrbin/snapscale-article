@@ -180,7 +180,7 @@ instance_class: F1
 <p align="center">
   <img src="bad.jpg" alt="Contour detection problems" border="1px">
 </p>
-<p>As negative examples were not a minority of my training set, I ultimately gave up on OpenCV and started looking into ML models. My next step was to use SVHN, but I'll skip the details there.. Long story short is that SVHN numbers are very different from display numbers. Finally, I decided to train a custom model using the training set I collected.</p>
+<p>As negative examples were not a minority of my training set, I ultimately gave up on OpenCV and started looking into ML models. My next step was to use SVHN (Street View House Numbers) dataset, but I'll skip the details there.. Long story short is that SVHN numbers are very different from the display numbers. Finally, I decided to train a custom model using the training set I collected.</p>
 <p>Spoiler alert - all images from above examples were correctly classified with Tensorflow Object Detection.</p>
 <h3 id="iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</h3>
 <p>From their documentation, <a href="https://cloud.google.com/vision/automl/object-detection/docs">Google Cloud AutoML Vision Object Detection</a> looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only. No setup, no config.</p>
