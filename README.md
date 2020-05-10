@@ -4,7 +4,7 @@ I am writing this post to share my thoughts about:
 
 * ML principles for real-world applications
 
-In this article, I explain that unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in real world projects come last. Also, expect that ML engineering will be dominated by data transform and evaluation framework.
+In this article, I explain that unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in the real world projects come last. Also, expect that ML engineering will be dominated by data transform and evaluation framework.
 
 * The state of ML tools today available on Google Cloud
 
@@ -12,7 +12,7 @@ If the above sounds pessimistic to you, and you really wanted to show-off your M
 
 * Rotation-invariant algorithm to detect a display on the image and read the weight value written on it
 
-The related work with display OCR that I analyzed didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might get you your 5 minutes of ML fame!
+The related work with display OCR that I analyzed didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!
 
 ### Targeted audience
 
@@ -26,13 +26,13 @@ I started drilling on SnapScale in mid-2018 with a goal of **creating a weigh-in
 
 Feel free to try it out - no log-in or account creation is required - [SnapScale - build a weight-in habit](https://snapscale.life).
 
-This report gives a timeline of a complete product heavily relying on ML tools.
+This report gives a timeline of an end-to-end real-world application heavily relying on ML tools.
 
 ## App implementation
 
 ### User-facing product
 
-The goal of SnapScale is to instill a weigh-in habit in humans. Taking a weight measurement has an amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.
+The goal of SnapScale is to instill a weigh-in habit in humans. Taking a weight measurement has an amplified awareness effect if the number is logged, and if you can compare it with last week or last month. It's the trend that matters, not day-to-day oscillations.
 
 The app lets you log the weight measurement by taking a photo of the scale's display while you're standing on the scale. User doesn't need to lean down - a photo taken from the normal hand height works. The AI model reads out the digits and logs the weight.
 
@@ -124,7 +124,7 @@ I started working on Image recognition ~2 months in the project. At that time, I
 
 I found a bunch of existing related models that would in theory solve our problem. Reproducibility of those projects was low.
 
-Classical computer vision techniques on GitHub:
+OpenCV approaches on GitHub:
 
 * [github.com/jacnel/wetr](https://github.com/jacnel/wetr)
 * [github.com/NatholBMX/ScaleDigitizer](https://github.com/NatholBMX/ScaleDigitizer)
@@ -134,7 +134,7 @@ Classical computer vision techniques on GitHub:
 * [bikz05/digit-recognition](https://github.com/bikz05/digit-recognition)
 * [g-sari/pyautodigits](https://github.com/g-sari/pyautodigits)
 
-Classical computer vision techniques articles:
+OpenCV approaches articles:
 
 * [Reading LCD/LED Displays with a Camera Cell Phone](http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf)
 * [Building a Gas Pump Scanner with OpenCV/Python/iOS](https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b))
@@ -172,6 +172,32 @@ My time in investigating and trying out existing solutions was roughly spent lik
 I implemented 5-6 different pipelines that will take SnapScale images and labels and convert them to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.
 
 I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 450 images available.
+
+### Iterations with OpenCV
+
+I spent 2-3 weeks trying to tune OpenCV algorithms to preprocess the images into binary images where the digits are distinguished from background. This is the usual preprocessing step used by related work from the first two sections above. Assuming that this step is successful, the following phases would run connected components to isolate each digit and then run shape classification to recognize the final number.
+
+Here are some examples where OpenCV `adaptiveThreshold` was able to do the job correctly after painfull tuning process:
+
+<p align="center">
+  <img src="good.jpg" alt="Good binarization examples" border="1px">
+</p>
+
+Unfortunatelly a good amount of images looked more challenging for binarization:
+
+<p align="center">
+  <img src="bin.jpg" alt="Bad binarization examples" border="1px">
+</p>
+
+My confidence further deflated when I figured that many of the images in the set are not sharp .. that screws up both binarization and later contour detection:
+
+<p align="center">
+  <img src="bad.jpg" alt="Contour detection problems" border="1px">
+</p>
+
+As negative examples were not a minority of my training set, I ultimately gave up on OpenCV and started looking into ML models. My next step was to use SVHN, but I'll skip the details there.. Long story short is that SVHN numbers are very different from display numbers. Finally, I decided to train a custom model using the training set I collected.
+
+Spoiler alert - all images from above examples were correctly classified with Tensorflow Object Detection.
 
 ### Iterations with custom-trained object detection
 
@@ -265,6 +291,19 @@ The final accuracies (the weight value correctly recognized):
 The detection latency is ~15 seconds, mostly because I optimized serving to be price efficient (free).
 
 ## Conclusion
+
+### ML comes last
+
+Don't start your idea pitches with "We will use ML to do XYZ", just say "We will do XYZ".
+
+Even if ML will be a backbone tool in your solution the engineering is still dominated by all other (less sexy) tasks:
+
+- building infrastructure for collecting the data
+- implementing evaluation frameworks
+- implementing debugging tools
+- data transformation pipelines
+
+My opinion is that great engineering practices can be shown in any engineering challenge. The sexiness or non-sexiness is fake.
 
 ### The state of Object Detection support
 

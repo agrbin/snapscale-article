@@ -22,11 +22,13 @@
 <li><a href="#labelling-ui">Labelling UI</a></li></ul></li>
 <li><a href="#image-recognition">Image recognition</a><ul>
 <li><a href="#existing-work">Existing work</a></li>
+<li><a href="#iterations-with-opencv">Iterations with OpenCV</a></li>
 <li><a href="#iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</a><ul>
 <li><a href="#display-detection">Display detection</a></li>
 <li><a href="#digit-detection">Digit detection</a></li></ul></li>
 <li><a href="#results">Results</a></li></ul></li>
 <li><a href="#conclusion">Conclusion</a><ul>
+<li><a href="#ml-comes-last">ML comes last</a></li>
 <li><a href="#the-state-of-object-detection-support">The state of Object Detection support</a></li>
 <li><a href="#ml-principles-i-violated-and-got-burnt">ML principles I violated and got burnt</a></li>
 <li><a href="#parting-words">Parting words</a></li></ul></li>
@@ -36,7 +38,7 @@
 <ul>
 <li>ML principles for real-world applications</li>
 </ul>
-<p>In this article, I explain that unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in real world projects come last. Also, expect that ML engineering will be dominated by data transform and evaluation framework.</p>
+<p>In this article, I explain that unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in the real world projects come last. Also, expect that ML engineering will be dominated by data transform and evaluation framework.</p>
 <ul>
 <li>The state of ML tools today available on Google Cloud</li>
 </ul>
@@ -44,7 +46,7 @@
 <ul>
 <li>Rotation-invariant algorithm to detect a display on the image and read the weight value written on it</li>
 </ul>
-<p>The related work with display OCR that I analyzed didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might get you your 5 minutes of ML fame!</p>
+<p>The related work with display OCR that I analyzed didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!</p>
 <h3 id="targeted-audience">Targeted audience</h3>
 <ul>
 <li><p>Software Engineers, Data Scientists, Product Managers and other Rock and Roll people.</p></li>
@@ -53,10 +55,10 @@
 <h2 id="introduction">Introduction</h2>
 <p>I started drilling on SnapScale in mid-2018 with a goal of <strong>creating a weigh-in habit</strong> for a friend of mine. I converted their old school scale into a smart one <strong>using the phone's camera</strong>. The user scans the weight measurement with a phone and the app recognizes the value, logs it, and optionally exports to FitBit profile.</p>
 <p>Feel free to try it out - no log-in or account creation is required - <a href="https://snapscale.life">SnapScale - build a weight-in habit</a>.</p>
-<p>This report gives a timeline of a complete product heavily relying on ML tools.</p>
+<p>This report gives a timeline of an end-to-end real-world application heavily relying on ML tools.</p>
 <h2 id="app-implementation">App implementation</h2>
 <h3 id="user-facing-product">User-facing product</h3>
-<p>The goal of SnapScale is to instill a weigh-in habit in humans. Taking a weight measurement has an amplified awareness effect if the number is logged, and if you can compare it with last week, or last month. It's the trend that matters, not day-to-day oscillations.</p>
+<p>The goal of SnapScale is to instill a weigh-in habit in humans. Taking a weight measurement has an amplified awareness effect if the number is logged, and if you can compare it with last week or last month. It's the trend that matters, not day-to-day oscillations.</p>
 <p>The app lets you log the weight measurement by taking a photo of the scale's display while you're standing on the scale. User doesn't need to lean down - a photo taken from the normal hand height works. The AI model reads out the digits and logs the weight.</p>
 <p>There are 3 screens in the app:</p>
 <ul>
@@ -117,7 +119,7 @@ instance_class: F1
 <p>I started working on Image recognition ~2 months in the project. At that time, I had an application that works, with 1-2 OCR requests per day all labeled manually. I was ready to implement the digit recognition submodule. I expected that I will find something that works out of the box, and that most of engineering will be just plugging it in and evaluating accuracy.</p>
 <h3 id="existing-work">Existing work</h3>
 <p>I found a bunch of existing related models that would in theory solve our problem. Reproducibility of those projects was low.</p>
-<p>Classical computer vision techniques on GitHub:</p>
+<p>OpenCV approaches on GitHub:</p>
 <ul>
 <li><a href="https://github.com/jacnel/wetr">github.com/jacnel/wetr</a></li>
 <li><a href="https://github.com/NatholBMX/ScaleDigitizer">github.com/NatholBMX/ScaleDigitizer</a></li>
@@ -127,7 +129,7 @@ instance_class: F1
 <li><a href="https://github.com/bikz05/digit-recognition">bikz05/digit-recognition</a></li>
 <li><a href="https://github.com/g-sari/pyautodigits">g-sari/pyautodigits</a></li>
 </ul>
-<p>Classical computer vision techniques articles:</p>
+<p>OpenCV approaches articles:</p>
 <ul>
 <li><a href="http://www.dccia.ua.es/~sco/ComputerVision/embedded.pdf">Reading LCD/LED Displays with a Camera Cell Phone</a></li>
 <li><a href="https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b">Building a Gas Pump Scanner with OpenCV/Python/iOS</a>)</li>
@@ -164,6 +166,22 @@ instance_class: F1
 </ul>
 <p>I implemented 5-6 different pipelines that will take SnapScale images and labels and convert them to a format that the solutions above take :) That's a lot of hours spent debugging bugs in geometry and image processing code.</p>
 <p>I didn't expect to get in a situation where I'll be (re)training new models. Especially because I had only 450 images available.</p>
+<h3 id="iterations-with-opencv">Iterations with OpenCV</h3>
+<p>I spent 2-3 weeks trying to tune OpenCV algorithms to preprocess the images into binary images where the digits are distinguished from background. This is the usual preprocessing step used by related work from the first two sections above. Assuming that this step is successful, the following phases would run connected components to isolate each digit and then run shape classification to recognize the final number.</p>
+<p>Here are some examples where OpenCV <code>adaptiveThreshold</code> was able to do the job correctly after painfull tuning process:</p>
+<p align="center">
+  <img src="good.jpg" alt="Good binarization examples" border="1px">
+</p>
+<p>Unfortunatelly a good amount of images looked more challenging for binarization:</p>
+<p align="center">
+  <img src="bin.jpg" alt="Bad binarization examples" border="1px">
+</p>
+<p>My confidence further deflated when I figured that many of the images in the set are not sharp .. that screws up both binarization and later contour detection:</p>
+<p align="center">
+  <img src="bad.jpg" alt="Contour detection problems" border="1px">
+</p>
+<p>As negative examples were not a minority of my training set, I ultimately gave up on OpenCV and started looking into ML models. My next step was to use SVHN, but I'll skip the details there.. Long story short is that SVHN numbers are very different from display numbers. Finally, I decided to train a custom model using the training set I collected.</p>
+<p>Spoiler alert - all images from above examples were correctly classified with Tensorflow Object Detection.</p>
 <h3 id="iterations-with-custom-trained-object-detection">Iterations with custom-trained object detection</h3>
 <p>From their documentation, <a href="https://cloud.google.com/vision/automl/object-detection/docs">Google Cloud AutoML Vision Object Detection</a> looks too good to be true. The Web UI enables you to upload images, train the model and see evaluation results. The trainer uses transfer learning which enables it to train something useful even with a few hundred images only. No setup, no config.</p>
 <p>Naive as I am, I started by training a model that solves everything at once: read digits from raw user image. The input is the raw user image, and the output are labeled digit rectangles.</p>
@@ -226,6 +244,16 @@ instance_class: F1
 </ul>
 <p>The detection latency is ~15 seconds, mostly because I optimized serving to be price efficient (free).</p>
 <h2 id="conclusion">Conclusion</h2>
+<h3 id="ml-comes-last">ML comes last</h3>
+<p>Don't start your idea pitches with "We will use ML to do XYZ", just say "We will do XYZ".</p>
+<p>Even if ML will be a backbone tool in your solution the engineering is still dominated by all other (less sexy) tasks:</p>
+<ul>
+<li>building infrastructure for collecting the data</li>
+<li>implementing evaluation frameworks</li>
+<li>implementing debugging tools</li>
+<li>data transformation pipelines</li>
+</ul>
+<p>My opinion is that great engineering practices can be shown in any engineering challenge. The sexiness or non-sexiness is fake.</p>
 <h3 id="the-state-of-object-detection-support">The state of Object Detection support</h3>
 <p>I am surprised by the simplicity and efficiency of Google Cloud AutoML Object Detection. When it comes to pricing, each account gets $300 free quota which is enough to train 5-10 model iterations. If you are lucky to get the result you need in that quota, everything else can be free - they give the ability to download the trained model as a Docker container, TF.js bundle or TF Lite bundle.</p>
 <p>Using this free quota I managed to train a successful weight scale measurement OCR system.</p>
