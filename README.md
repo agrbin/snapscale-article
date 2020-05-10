@@ -12,7 +12,7 @@ If the above sounds pessimistic to you, and you really wanted to show-off your M
 
 * Rotation-invariant algorithm to detect a display on the image and read the weight value written on it
 
-The related work with display OCR that I analyzed didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!
+Existing solutions for OCR-ing displays didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!
 
 ### Targeted audience
 
@@ -303,7 +303,7 @@ Even if ML will be a backbone tool in your solution the engineering is still dom
 - implementing debugging tools
 - data transformation pipelines
 
-My opinion is that great engineering practices can be shown in any engineering challenge. The sexiness or non-sexiness is fake.
+My opinion is that great engineering practices can be shown in any engineering challenge. The sexiness or non-sexiness of problems is irrelevant (unless you're recruiting new grads).
 
 ### The state of Object Detection support
 

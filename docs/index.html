@@ -46,7 +46,7 @@
 <ul>
 <li>Rotation-invariant algorithm to detect a display on the image and read the weight value written on it</li>
 </ul>
-<p>The related work with display OCR that I analyzed didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!</p>
+<p>Existing solutions for OCR-ing displays didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!</p>
 <h3 id="targeted-audience">Targeted audience</h3>
 <ul>
 <li><p>Software Engineers, Data Scientists, Product Managers and other Rock and Roll people.</p></li>
@@ -253,7 +253,7 @@ instance_class: F1
 <li>implementing debugging tools</li>
 <li>data transformation pipelines</li>
 </ul>
-<p>My opinion is that great engineering practices can be shown in any engineering challenge. The sexiness or non-sexiness is fake.</p>
+<p>My opinion is that great engineering practices can be shown in any engineering challenge. The sexiness or non-sexiness of problems is irrelevant (unless you're recruiting new grads).</p>
 <h3 id="the-state-of-object-detection-support">The state of Object Detection support</h3>
 <p>I am surprised by the simplicity and efficiency of Google Cloud AutoML Object Detection. When it comes to pricing, each account gets $300 free quota which is enough to train 5-10 model iterations. If you are lucky to get the result you need in that quota, everything else can be free - they give the ability to download the trained model as a Docker container, TF.js bundle or TF Lite bundle.</p>
 <p>Using this free quota I managed to train a successful weight scale measurement OCR system.</p>
