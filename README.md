@@ -177,13 +177,13 @@ I didn't expect to get in a situation where I'll be (re)training new models. Esp
 
 I spent 2-3 weeks trying to tune OpenCV algorithms to preprocess the images into binary images where the digits are distinguished from background. This is the usual preprocessing step used by related work from the first two sections above. Assuming that this step is successful, the following phases would run connected components to isolate each digit and then run shape classification to recognize the final number.
 
-Here are some examples where OpenCV `adaptiveThreshold` was able to do the job correctly after painfull tuning process:
+Here are some examples where OpenCV `adaptiveThreshold` was able to do the job correctly after painful tuning process:
 
 <p align="center">
   <img src="good.jpg" alt="Good binarization examples" border="1px">
 </p>
 
-Unfortunatelly a good amount of images looked more challenging for binarization:
+Unfortunately a good amount of images looked more challenging for binarization:
 
 <p align="center">
   <img src="bin.jpg" alt="Bad binarization examples" border="1px">
@@ -197,7 +197,7 @@ My confidence further deflated when I figured that many of the images in the set
 
 As negative examples were not a minority of my training set, I ultimately gave up on OpenCV and started looking into ML models. My next step was to use SVHN (Street View House Numbers) dataset, but I'll skip the details there.. Long story short is that SVHN numbers are very different from the display numbers. Finally, I decided to train a custom model using the training set I collected.
 
-Spoiler alert - all images from above examples were correctly classified with Tensorflow Object Detection.
+Spoiler alert - all images from the above examples were correctly classified with Tensorflow Object Detection explained below.
 
 ### Iterations with custom-trained object detection
 
