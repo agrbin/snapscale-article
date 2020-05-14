@@ -253,15 +253,12 @@
 <p>Using this free quota I managed to train a successful weight scale measurement OCR system.</p>
 <h3 id="ml-principles-i-violated-and-got-burnt">ML principles I violated and got burnt</h3>
 <p><strong>The distribution of data during prediction must align with the distribution of data during training.</strong></p>
-<p>I broke this principle multiple times. First, I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. Lol, no. The transfer learning from the SVHN model to my problem space also didn't end up working.</p>
+<p>I broke this principle multiple times. First, I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. The transfer learning from the SVHN model to my problem space also didn't end up working.</p>
 <p>During display orientation detection, I broke this principle again - I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - it was rubbish, sometimes high, sometimes low.</p>
-<p>When it comes to the data collection phase, I think I got it right, at least in this principle. To collect the training dataset I built the application in its final form, with a fake model (myself as human labeller). Once the model was ready, I just swapped out the human.</p>
 <p><strong>Be evaluation driven.</strong></p>
 <p>Early in the project when I was evaluating the related work, I would try to run the existing model and then feed it with an image or two to see how it works. Only when my custom quality iterations started, I built a pipeline that runs the model on all train/test/val images and reports the metrics.</p>
 <p>It would be better if I defined a container interface early on that listens to the image request on HTTP and gives a standardised JSON output. Then I would have a Docker image for every related work I managed to successfully run, persisted together with evaluation results. Having not done so, I only have weak (empirical) evidence that the related work models didn't work on my problem space.</p>
 <p>When it comes to running things from other research-y works, the dependencies pose a big challenge. Docker solves this problem completely, and I am looking forward to seeing Docker adoption in academia.</p>
-<p><strong>Be loss analysis driven.</strong></p>
-<p>During loss analysis, it would happen to me that after I've seen 2 similar failures I would rush into implementing a hotfix for that specific pattern. This hotfix would always get reverted later on. Implementing hotfixes for specific losses (instead of biggest loss patterns) only increases the model complexity and, in my experience, it doesn't reflect wins in validation set metric. The lesson learned here is to be patient, finish analyzing all losses that you prepared and then decide on the next step.</p>
 <h3 id="parting-words">Parting words</h3>
 <p>On Monday, 2019-10-28 I was in a room in downtown Manhattan packed with excited engineers and PMs who were ready to take over the world. This was AWS Data Lake Day in AWS Loft. I clearly remember a specific sentence - the speaker said confidently:</p>
 <blockquote>

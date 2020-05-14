@@ -305,11 +305,9 @@ Using this free quota I managed to train a successful weight scale measurement O
 
 **The distribution of data during prediction must align with the distribution of data during training.**
 
-I broke this principle multiple times. First, I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. Lol, no. The transfer learning from the SVHN model to my problem space also didn't end up working.
+I broke this principle multiple times. First, I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. The transfer learning from the SVHN model to my problem space also didn't end up working.
 
 During display orientation detection, I broke this principle again - I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - it was rubbish, sometimes high, sometimes low.
-
-When it comes to the data collection phase, I think I got it right, at least in this principle. To collect the training dataset I built the application in its final form, with a fake model (myself as human labeller). Once the model was ready, I just swapped out the human.
 
 **Be evaluation driven.**
 
@@ -318,10 +316,6 @@ Early in the project when I was evaluating the related work, I would try to run 
 It would be better if I defined a container interface early on that listens to the image request on HTTP and gives a standardised JSON output. Then I would have a Docker image for every related work I managed to successfully run, persisted together with evaluation results. Having not done so, I only have weak (empirical) evidence that the related work models didn't work on my problem space.
 
 When it comes to running things from other research-y works, the dependencies pose a big challenge. Docker solves this problem completely, and I am looking forward to seeing Docker adoption in academia.
-
-**Be loss analysis driven.**
-
-During loss analysis, it would happen to me that after I've seen 2 similar failures I would rush into implementing a hotfix for that specific pattern. This hotfix would always get reverted later on. Implementing hotfixes for specific losses (instead of biggest loss patterns) only increases the model complexity and, in my experience, it doesn't reflect wins in validation set metric. The lesson learned here is to be patient, finish analyzing all losses that you prepared and then decide on the next step.
 
 ### Parting words
 
