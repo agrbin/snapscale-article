@@ -1,18 +1,18 @@
 ## The goal
 
-I am writing this post to share my thoughts about:
+This post shares my thoughts about:
 
 * ML principles for real-world applications
 
-In this article, I explain that unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in the real world projects come last. Also, expect that ML engineering will be dominated by data transform and evaluation framework.
+Unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in the real world projects come last. Engineering will be dominated by data transform and evaluation framework.
 
 * The state of ML tools today available on Google Cloud
 
-If the above sounds pessimistic to you, and you really wanted to show-off your ML skills on a real-world project coming up in your company, I have more bad news. All the cool things were already implemented by the cloud services, and they are giving it almost for free. Again, your time will be spent on massaging the data. The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well! Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them!
+The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well for me! Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them! Once again, engineering time in real world applications will be spent on massaging the data.
 
 * Rotation-invariant algorithm to detect a display on the image and read the weight value written on it
 
-Existing solutions for OCR-ing displays didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!
+In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!
 
 ### Targeted audience
 
@@ -74,19 +74,9 @@ The application is built using [Expo](https://expo.io) framework which is a wrap
 
 ### Backend
 
-Backend is used to store weight logs and images. The clients don't do any authentication, but there is a lightweight handshake step.
-
-On app install, users agree to Terms of Use using captcha as a signature. The successful captcha challenge gives a permanent session token to the application that is later required to communicate with the backend. I find this trick useful when designing an application + backend storage without requiring a login.
+Backend is used to store weight logs and images that will be used for model training. The clients don't do any authentication, but there is a lightweight handshake step to guard from spamming.
 
 Although login sounds like a good alternative, I suspect it would repel some users due to sensitivity of the images that are being sent. This way we keep user images stripped of any other kind of PII.
-
-Backend is deployed as a [NodeJS](https://nodejs.org) application on [Google App Engine](https://cloud.google.com/appengine). To get a free-of-charge deployment for prototypes with low amount of requests, the trick is to use `standard` environment with `F1` instance class. The `app.yaml` config looks like this:
-
-```
-runtime: nodejs12
-env: standard
-instance_class: F1
-```
 
 The database for metadata used is [Google Cloud Datastore](https://cloud.google.com/datastore) and for the image store I used [Google Cloud Storage](https://cloud.google.com/storage). Both systems are free-of-charge for prototypes with low amount of requests. Also, no setup is needed.
 

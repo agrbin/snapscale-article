@@ -34,19 +34,19 @@
 <li><a href="#parting-words">Parting words</a></li></ul></li>
 </ul>
 <h2 id="the-goal">The goal</h2>
-<p>I am writing this post to share my thoughts about:</p>
+<p>This post shares my thoughts about:</p>
 <ul>
 <li>ML principles for real-world applications</li>
 </ul>
-<p>In this article, I explain that unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in the real world projects come last. Also, expect that ML engineering will be dominated by data transform and evaluation framework.</p>
+<p>Unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in the real world projects come last. Engineering will be dominated by data transform and evaluation framework.</p>
 <ul>
 <li>The state of ML tools today available on Google Cloud</li>
 </ul>
-<p>If the above sounds pessimistic to you, and you really wanted to show-off your ML skills on a real-world project coming up in your company, I have more bad news. All the cool things were already implemented by the cloud services, and they are giving it almost for free. Again, your time will be spent on massaging the data. The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well! Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them!</p>
+<p>The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well for me! Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them! Once again, engineering time in real world applications will be spent on massaging the data.</p>
 <ul>
 <li>Rotation-invariant algorithm to detect a display on the image and read the weight value written on it</li>
 </ul>
-<p>Existing solutions for OCR-ing displays didn't tackle image orientation and display localization problem. All input images were always digits that are centered in the image and rotated upright. In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!</p>
+<p>In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!</p>
 <h3 id="targeted-audience">Targeted audience</h3>
 <ul>
 <li><p>Software Engineers, Data Scientists, Product Managers and other Rock and Roll people.</p></li>
@@ -89,14 +89,8 @@
 <h3 id="mobile-app-framework">Mobile app framework</h3>
 <p>The application is built using <a href="https://expo.io">Expo</a> framework which is a wrapper around <a href="https://reactnative.dev/">React Native</a>.  It's suitable for fast prototyping which is exactly what I needed. Same codebase is executed on both platforms. If Expo had a book it would be called "App development for dummies".</p>
 <h3 id="backend">Backend</h3>
-<p>Backend is used to store weight logs and images. The clients don't do any authentication, but there is a lightweight handshake step.</p>
-<p>On app install, users agree to Terms of Use using captcha as a signature. The successful captcha challenge gives a permanent session token to the application that is later required to communicate with the backend. I find this trick useful when designing an application + backend storage without requiring a login.</p>
+<p>Backend is used to store weight logs and images that will be used for model training. The clients don't do any authentication, but there is a lightweight handshake step to guard from spamming.</p>
 <p>Although login sounds like a good alternative, I suspect it would repel some users due to sensitivity of the images that are being sent. This way we keep user images stripped of any other kind of PII.</p>
-<p>Backend is deployed as a <a href="https://nodejs.org">NodeJS</a> application on <a href="https://cloud.google.com/appengine">Google App Engine</a>. To get a free-of-charge deployment for prototypes with low amount of requests, the trick is to use <code>standard</code> environment with <code>F1</code> instance class. The <code>app.yaml</code> config looks like this:</p>
-<pre><code>runtime: nodejs12
-env: standard
-instance_class: F1
-</code></pre>
 <p>The database for metadata used is <a href="https://cloud.google.com/datastore">Google Cloud Datastore</a> and for the image store I used <a href="https://cloud.google.com/storage">Google Cloud Storage</a>. Both systems are free-of-charge for prototypes with low amount of requests. Also, no setup is needed.</p>
 <p>The natural next step is to move the model execution to the client, which will remove a need for a backend, and simplify privacy policy.</p>
 <h3 id="labelling-ui">Labelling UI</h3>
