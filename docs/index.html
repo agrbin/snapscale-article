@@ -36,17 +36,17 @@
 <h2 id="the-goal">The goal</h2>
 <p>This post shares my thoughts about:</p>
 <ul>
-<li>ML principles for real-world applications</li>
+<li>Rotation-invariant algorithm to detect a display on the image and read the weight value written on it</li>
 </ul>
-<p>Unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in the real world projects come last. Engineering will be dominated by data transform and evaluation framework.</p>
+<p>In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. On top of that, I would like to share my thoughts on the overall process of building an AI-powered product.</p>
 <ul>
 <li>The state of ML tools today available on Google Cloud</li>
 </ul>
-<p>The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well for me! Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them! Once again, engineering time in real world applications will be spent on massaging the data.</p>
+<p>The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well for me. Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them! Once again, engineering time in real world applications will be spent on massaging the data.</p>
 <ul>
-<li>Rotation-invariant algorithm to detect a display on the image and read the weight value written on it</li>
+<li>ML principles for real-world applications</li>
 </ul>
-<p>In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!</p>
+<p>Unless you are writing a school project, or sharpening your ML skills, the deeper ML challenges in the real world projects come last. Engineering will be dominated by data selection / gathering / cleaning / reformatting and evaluation frameworks.</p>
 <h3 id="targeted-audience">Targeted audience</h3>
 <ul>
 <li><p>Software Engineers, Data Scientists, Product Managers and other Rock and Roll people.</p></li>
@@ -252,9 +252,9 @@
 <p>I am surprised by the simplicity and efficiency of Google Cloud AutoML Object Detection. When it comes to pricing, each account gets $300 free quota which is enough to train 5-10 model iterations. If you are lucky to get the result you need in that quota, everything else can be free - they give the ability to download the trained model as a Docker container, TF.js bundle or TF Lite bundle.</p>
 <p>Using this free quota I managed to train a successful weight scale measurement OCR system.</p>
 <h3 id="ml-principles-i-violated-and-got-burnt">ML principles I violated and got burnt</h3>
-<p><strong>The distribution of data during prediction must align with the distribution of data during training.</strong></p>
-<p>I broke this principle multiple times. First, I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. The transfer learning from the SVHN model to my problem space also didn't end up working.</p>
-<p>During display orientation detection, I broke this principle again - I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - it was rubbish, sometimes high, sometimes low.</p>
+<p><strong>The distribution of data presented to the model in production must align with the validation set distribution.</strong></p>
+<p>I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. The transfer learning from the SVHN model to my problem space also didn't end up working.</p>
+<p>In display orientation detection, I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - it was rubbish, sometimes high, sometimes low.</p>
 <p><strong>Be evaluation driven.</strong></p>
 <p>Early in the project when I was evaluating the related work, I would try to run the existing model and then feed it with an image or two to see how it works. Only when my custom quality iterations started, I built a pipeline that runs the model on all train/test/val images and reports the metrics.</p>
 <p>It would be better if I defined a container interface early on that listens to the image request on HTTP and gives a standardised JSON output. Then I would have a Docker image for every related work I managed to successfully run, persisted together with evaluation results. Having not done so, I only have weak (empirical) evidence that the related work models didn't work on my problem space.</p>

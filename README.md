@@ -2,17 +2,17 @@
 
 This post shares my thoughts about:
 
-* ML principles for real-world applications
+* Rotation-invariant algorithm to detect a display on the image and read the weight value written on it
 
-Unless you are writing a school project, or sharpening your ML skills, the textbook ML challenges in the real world projects come last. Engineering will be dominated by data transform and evaluation framework.
+In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. On top of that, I would like to share my thoughts on the overall process of building an AI-powered product.
 
 * The state of ML tools today available on Google Cloud
 
-The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well for me! Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them! Once again, engineering time in real world applications will be spent on massaging the data.
+The Google Cloud AutoML Object Detection and their whole AI Platform worked surprisingly well for me. Even bigger surprise is that the trained models can be exported so you can use a runtime on your own to run them! Once again, engineering time in real world applications will be spent on massaging the data.
 
-* Rotation-invariant algorithm to detect a display on the image and read the weight value written on it
+* ML principles for real-world applications
 
-In this article, I describe a robust solution for display orientation localization which is a preprocessor for the digit detection problem. If you are hungry for challenges this might be a piece of good news - setting up inputs and targets for ML models is a different challenge for every application. Picking a smart way to set the target labels might be your 5 minutes of ML fame!
+Unless you are writing a school project, or sharpening your ML skills, the deeper ML challenges in the real world projects come last. Engineering will be dominated by data selection / gathering / cleaning / reformatting and evaluation frameworks.
 
 ### Targeted audience
 
@@ -303,11 +303,11 @@ Using this free quota I managed to train a successful weight scale measurement O
 
 ### ML principles I violated and got burnt
 
-**The distribution of data during prediction must align with the distribution of data during training.**
+**The distribution of data presented to the model in production must align with the validation set distribution.**
 
-I broke this principle multiple times. First, I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. The transfer learning from the SVHN model to my problem space also didn't end up working.
+I thought that SVHN trained models would do a good job in recognizing scale weight measurement numbers. The transfer learning from the SVHN model to my problem space also didn't end up working.
 
-During display orientation detection, I broke this principle again - I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - it was rubbish, sometimes high, sometimes low.
+In display orientation detection, I thought that the model trained on upright display images would give a low score to input images that are not upright. The score was not low - it was rubbish, sometimes high, sometimes low.
 
 **Be evaluation driven.**
 
