@@ -323,12 +323,6 @@ On Monday, 2019-10-28 I was in a room in downtown Manhattan packed with excited 
 
 > You've gotta use ML! If you don't, chances are that your competitors will.
 
-I hated it. On the other hand, in the audience I saw ripples of head-nodding folks getting high on agreement with the speaker.
+I didn’t like this. On the other hand, in the audience I saw ripples of head-nodding folks getting high on agreement with the speaker.
 
-I decided to embrace a different engineering principle - "Don't go AI first - always stay user first". ML is a tool, not a goal.
-
-Even The Doors knew this when they played The Roadhouse Blues. They say:
-
-> Yeah, keep your eyes on the road, your hands upon the wheel.
-
-For **the road**, they probably meant **user goal** and for **the wheel** they meant **the tools** - whatever tools are needed - a for-loop, a compiler, a database or an ML model.
+I am all for using AI when it solves the user’s problem, so my engineering principle stays — “always user first”. ML is a tool, not a goal.
